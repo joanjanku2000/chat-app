@@ -10,3 +10,8 @@ alter table dbo.user_message
 add constraint FK_Receiver 
 FOREIGN KEY (receiver_id)
 references userr(id)
+;
+
+
+alter table dbo.userr
+add passwordd nchar(255) not null;
