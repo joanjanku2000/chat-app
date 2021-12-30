@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chat_application_with_windows_forms.Login;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,7 @@ namespace Chat_application_with_windows_forms
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            Application.Run(new Sign_in());
         }
     }
 }

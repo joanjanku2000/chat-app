@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Chat_application_with_windows_forms.Repository.user;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -144,6 +145,12 @@ namespace Chat_application_with_windows_forms
 
             return null;
             
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            UserRepo userRepo = new UserRepo();
+            Console.WriteLine("Got user {0} ", userRepo.findUserById(1));
         }
     }
 
