@@ -89,9 +89,10 @@ namespace Chat_application_with_windows_forms.Login
             // 
             // password
             // 
+            this.password.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.password.Location = new System.Drawing.Point(121, 232);
             this.password.Name = "password";
-            this.password.Size = new System.Drawing.Size(248, 22);
+            this.password.Size = new System.Drawing.Size(248, 27);
             this.password.TabIndex = 4;
             // 
             // log_in
@@ -117,9 +118,10 @@ namespace Chat_application_with_windows_forms.Login
             // 
             // password_sign_up
             // 
+            this.password_sign_up.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.password_sign_up.Location = new System.Drawing.Point(520, 232);
             this.password_sign_up.Name = "password_sign_up";
-            this.password_sign_up.Size = new System.Drawing.Size(233, 22);
+            this.password_sign_up.Size = new System.Drawing.Size(233, 27);
             this.password_sign_up.TabIndex = 8;
             // 
             // phone_number_sign_up
@@ -131,9 +133,10 @@ namespace Chat_application_with_windows_forms.Login
             // 
             // confirm_password
             // 
+            this.confirm_password.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.confirm_password.Location = new System.Drawing.Point(520, 277);
             this.confirm_password.Name = "confirm_password";
-            this.confirm_password.Size = new System.Drawing.Size(233, 22);
+            this.confirm_password.Size = new System.Drawing.Size(233, 27);
             this.confirm_password.TabIndex = 9;
             // 
             // label4
@@ -182,7 +185,7 @@ namespace Chat_application_with_windows_forms.Login
             this.label8.TabIndex = 13;
             this.label8.Text = "Phone Number";
             // 
-            // Form1
+            // Sign_in
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -202,7 +205,7 @@ namespace Chat_application_with_windows_forms.Login
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Name = "Form1";
+            this.Name = "Sign_in";
             this.Text = "Welcome";
             this.ResumeLayout(false);
             this.PerformLayout();

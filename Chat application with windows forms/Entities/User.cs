@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chat_application_with_windows_forms.Entities
 {
-    class User
+    public class User
     {
         public Int64 id { get; set; }
         public string name { get; set; }

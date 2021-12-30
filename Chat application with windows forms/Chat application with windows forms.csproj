@@ -53,6 +53,8 @@
       <DependentUpon>chat_applicatinDataSet.xsd</DependentUpon>
     </Compile>
     <Compile Include="Entities\User.cs" />
+    <Compile Include="Exceptions\BadRequestException.cs" />
+    <Compile Include="Exceptions\NotFoundException.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,6 +67,7 @@
     <Compile Include="Login\Sign-up.Designer.cs">
       <DependentUpon>Sign-up.cs</DependentUpon>
     </Compile>
+    <Compile Include="MessageBoxes\Message.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\DatabaseConnection.cs" />

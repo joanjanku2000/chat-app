@@ -1,4 +1,5 @@
-﻿using Chat_application_with_windows_forms.Repository.user;
+﻿using Chat_application_with_windows_forms.Entities;
+using Chat_application_with_windows_forms.Repository.user;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,9 +25,10 @@ namespace Chat_application_with_windows_forms
         int port = 8080;
         Dictionary<string, string> messages = new Dictionary<string,string>();
         List<Message> messagesList = new List<Message>();
-        public Form1()
+        private User loggedUser;
+        public Form1(User user)
         {
-          
+            this.loggedUser = user; 
             tcpListener = new TcpListener(IPAddress.Any, port);
             tcpListener.Start();
             backgroundWorker = new BackgroundWorker();
@@ -149,8 +151,8 @@ namespace Chat_application_with_windows_forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            UserRepo userRepo = new UserRepo();
-            Console.WriteLine("Got user {0} ", userRepo.findUserById(1));
+           
+            Console.WriteLine("Logged use ris {0} ", loggedUser);
         }
     }
 
