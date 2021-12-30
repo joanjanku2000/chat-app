@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Chat_application_with_windows_forms.Security;
 
 namespace Chat_application_with_windows_forms.Login
 {
@@ -60,13 +61,84 @@ namespace Chat_application_with_windows_forms.Login
         {
             try
             {
-                return userRepo.findUserByUsernameAndPassword(phonenumber, password);
+                string hashedPsw = userRepo.findPassword(phonenumber).Trim();
+                string trimmedPsw = password.Trim();
+                if (PasswordHash.ValidatePassword(trimmedPsw, hashedPsw))
+                {
+                    Console.WriteLine("Passwords match");
+                    return userRepo.findUserByPhoneNumber(phonenumber);
+                } else
+                {
+                    MessageB.ERROR("Not Found", "Personi me keto te dhena nuk u gjet! Ju lutem provoni perseri");
+                    Console.WriteLine("Passwords do not match");
+                    return null;
+                }
+              
             } catch (NotFoundException e)
             {
                 MessageB.ERROR("Not Found" , "Personi me keto te dhena nuk u gjet! Ju lutem provoni perseri" );
             }
             return null;
            
+        }
+
+        private void sign_up_Click(object sender, EventArgs e)
+        {
+            string phoneNumber = phone_number_sign_up.Text;
+            string password = password_sign_up.Text;
+            string cPassword = confirm_password.Text;
+            string firstName = name.Text;
+            string lastName = lastname.Text;
+
+            if (!isPasswordSomewhatSafe(password))
+            {
+               
+                MessageB.ERROR("Password jo i sigurt", "Passwordi te kete 8 - 12 karakter, nder te cilat te kete numra dhe germa te medha");
+                return;
+            }
+            
+            if (firstName.Length == 0 || lastName.Length == 0 ||
+                phoneNumber.Length == 0 || password.Length == 0 || cPassword.Length == 0)
+            {
+                Console.WriteLine("Required fields were not set");
+                MessageB.ERROR("Te pa plotesuara", "Ju lutem plotesoni fushat required");
+                return;
+            } 
+
+            if (!password.Equals(cPassword))
+            {
+                MessageB.ERROR("Mosperputhje", "Passwordi dhe konfirmimi i tij nuk jane njesoj");
+                return;
+            }
+            try
+            {
+                if (userRepo.userExists(phoneNumber))
+                {
+                    MessageBox.Show("Error", "Ekziston nje perdorues me kete numer telefoni");
+                    return;
+                }
+            } catch (NotFoundException es)
+            {
+                MessageBox.Show("Error", "Ekziston me shume se nje perdorues me kete numer telefoni");
+                return;
+            }
+            Console.WriteLine("Now registering user. Checks passed");
+
+            Console.WriteLine("Hashing password ....");
+            string hashedPassword = PasswordHash.HashPassword(password);
+           
+            User newUserToRegister = new User(firstName,lastName,phoneNumber,hashedPassword);
+
+            if (userRepo.registerUser(newUserToRegister))
+            {
+                MessageB.INFORMATION("Sukses!", "Perdoruesi u regjistrua me sukses, ju mund te logoheni");
+                return;
+            }
+        }
+
+        private Boolean isPasswordSomewhatSafe(string password)
+        {
+            return true;
         }
     }
 }
