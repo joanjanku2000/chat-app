@@ -1,4 +1,6 @@
-﻿using Chat_application_with_windows_forms.Login;
+﻿using Chat_application_with_windows_forms.Client;
+using Chat_application_with_windows_forms.Login;
+using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +19,8 @@ namespace Chat_application_with_windows_forms
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Sign_in());
+            WebApp.Start<Startup>("http://localhost:8080");
+            Application.Run(new MessagesLayout());
         }
     }
 }

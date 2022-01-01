@@ -4,16 +4,10 @@ using Chat_application_with_windows_forms.Repository;
 using Chat_application_with_windows_forms.Repository.user;
 using Chat_application_with_windows_forms.MessageBoxes;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using Chat_application_with_windows_forms.Security;
+using System.Text.RegularExpressions;
 
 namespace Chat_application_with_windows_forms.Login
 {
@@ -36,6 +30,25 @@ namespace Chat_application_with_windows_forms.Login
 
         }
 
+        private void phoneNumberFormatCheck(string phonenumber)
+        {
+          
+
+            if (phonenumber[0] != '+' )
+            {
+                throw new BadRequestException("Please input a phone number ");
+            }
+            try
+            {
+                string phone = phonenumber.Substring(1);
+                int.Parse(phone);
+                if (phonenumber.Length<8 || phonenumber.Length > 15)
+                    throw new BadRequestException("Please input a phone number ");
+            } catch (Exception )
+            {
+                throw new BadRequestException("Please input a phone number ");
+            }
+        }
         private void log_in_Click(object sender, EventArgs e)
         {
             SqlConnection sql = DatabaseConnection.getInstance();
@@ -59,6 +72,15 @@ namespace Chat_application_with_windows_forms.Login
 
         private User login(string phonenumber,string password)
         {
+           /** try
+            {
+                phoneNumberFormatCheck(phonenumber);
+            }
+            catch (BadRequestException)
+            {
+                MessageB.ERROR("Numri i telefonit", "Ju lutem jepni nje numer te vlefshem telefoni");
+                return null;
+            } */
             try
             {
                 string hashedPsw = userRepo.findPassword(phonenumber).Trim();
@@ -85,6 +107,15 @@ namespace Chat_application_with_windows_forms.Login
         private void sign_up_Click(object sender, EventArgs e)
         {
             string phoneNumber = phone_number_sign_up.Text;
+           /* try
+            {
+                phoneNumberFormatCheck(phoneNumber);
+            }
+            catch (BadRequestException ex)
+            {
+                MessageB.ERROR("Numri i telefonit", "Ju lutem jepni nje numer te vlefshem telefoni");
+                return ;
+            } */
             string password = password_sign_up.Text;
             string cPassword = confirm_password.Text;
             string firstName = name.Text;
