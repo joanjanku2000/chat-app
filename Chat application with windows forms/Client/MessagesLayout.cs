@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR.Client;
+﻿using Chat_application_with_windows_forms.Entities;
+using Microsoft.AspNet.SignalR.Client;
 using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
@@ -16,9 +17,10 @@ namespace Chat_application_with_windows_forms.Client
     {
         HubConnection _signalRConnection;
         IHubProxy _hubProxy;
-
-        public MessagesLayout()
+        private User loggedUser;
+        public MessagesLayout(User loggedUser)
         {
+            this.loggedUser = loggedUser;
             InitializeComponent();
             ConnectAsync();
         }
@@ -31,12 +33,12 @@ namespace Chat_application_with_windows_forms.Client
             Console.WriteLine("Initialized hub connection");
             _hubProxy = _signalRConnection.CreateHubProxy("ChatHub");
             Console.WriteLine("Creating proxy");
-            _hubProxy.On<string, string>("AddMessage", (name, message) => AppendTextBox(name + " Message " +  message) );
+            _hubProxy.On<string, string>("AddMessage", (name, message) => AddMessage(name,message) );
             Console.WriteLine("MEthod mapping done");
             try
             {
                 await _signalRConnection.Start();
-                Console.WriteLine("Started succesfully signalRConnection");
+                Console.WriteLine("Started succesfully signalRConnection for user {0}",loggedUser.fullname());
             } catch (Exception e)
             {
                 Console.WriteLine("Not started");
@@ -44,7 +46,7 @@ namespace Chat_application_with_windows_forms.Client
             }
           
            
-            await _hubProxy.Invoke("setPhoneNumber", "+355695474025");
+            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber);
 
             Console.WriteLine("Connection established");
         }
@@ -59,6 +61,16 @@ namespace Chat_application_with_windows_forms.Client
 
         }
 
+        public void AddMessage(string sender, string message)
+        {
+            if (loggedUser.phoneNumber.Trim().Equals(sender.Trim())){
+                AppendTextBox("You: " + "  " + message);
+            } else
+            {
+                AppendTextBox(sender + ":  " + message);
+            }
+           
+        }
         public void AppendTextBox(string value)
         {
             if (InvokeRequired)
@@ -66,12 +78,15 @@ namespace Chat_application_with_windows_forms.Client
                 this.Invoke(new Action<string>(AppendTextBox), new object[] { value });
                 return;
             }
+           
             textBox1.Text += value;
+            textBox1.AppendText(Environment.NewLine);
+           
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            _hubProxy.Invoke("Send", "Test", "+355695474025", message.Text);
+            _hubProxy.Invoke("Send", loggedUser.phoneNumber, contactTextBox.Text, message.Text);
         }
     }
 }

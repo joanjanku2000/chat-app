@@ -1,26 +1,23 @@
-﻿using Chat_application_with_windows_forms.Client;
-using Chat_application_with_windows_forms.Login;
-using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Chat_application_with_windows_forms
+namespace WinFormsServer
 {
     static class Program
     {
         /// <summary>
-        /// The main entry point for the application.
+        ///  The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
+            Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-          
-            Application.Run(new Sign_in());
+            Application.Run(new Form1());
         }
     }
 }

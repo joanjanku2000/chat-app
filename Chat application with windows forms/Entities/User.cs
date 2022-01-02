@@ -33,6 +33,10 @@ namespace Chat_application_with_windows_forms.Entities
 
         public User() { }
       
+        public string fullname()
+        {
+            return this.name + " " + this.lastName;
+        }
         public override string ToString()
         {
             return $"{{{nameof(id)}={id}, {nameof(name)}={name}, {nameof(lastName)}={lastName}, {nameof(phoneNumber)}={phoneNumber}}}";

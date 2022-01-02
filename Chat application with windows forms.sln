@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.31911.196
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat application with windows forms", "Chat application with windows forms\Chat application with windows forms.csproj", "{E917EC73-983A-4C2C-B517-825B1D2F1208}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormServer", "WinFormServer\WinFormServer.csproj", "{042416F3-748B-4367-A488-CA785C1E3580}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{E917EC73-983A-4C2C-B517-825B1D2F1208}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E917EC73-983A-4C2C-B517-825B1D2F1208}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E917EC73-983A-4C2C-B517-825B1D2F1208}.Release|Any CPU.Build.0 = Release|Any CPU
+		{042416F3-748B-4367-A488-CA785C1E3580}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{042416F3-748B-4367-A488-CA785C1E3580}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{042416F3-748B-4367-A488-CA785C1E3580}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{042416F3-748B-4367-A488-CA785C1E3580}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

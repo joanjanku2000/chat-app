@@ -1,4 +1,4 @@
-﻿using Chat_application_with_windows_forms.Entities;
+﻿
 using Microsoft.AspNet.SignalR;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ namespace Chat_application_with_windows_forms.Hubs
 {
     public delegate void ClientConnectionEventHandler(string clientId);
    public class ChatHub : Hub
-    { /*
+    {
         static Dictionary<string, string> users = new Dictionary<string,string>();
         static Dictionary<string, string> reversed_users = new Dictionary<string, string>();
 
@@ -34,6 +34,6 @@ namespace Chat_application_with_windows_forms.Hubs
             reversed_users.TryGetValue(receiver,out conId);
 
             Clients.Client(conId).AddMessage(sender,message);
-        } */
+        }
     }
 }
