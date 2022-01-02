@@ -115,6 +115,7 @@ namespace Chat_application_with_windows_forms.Client
             this.Controls.Add(this.groupBox1);
             this.Name = "MessagesLayout";
             this.Text = "Chat ";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MessagesLayout_FormClosing);
             this.Load += new System.EventHandler(this.MessagesLayout_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

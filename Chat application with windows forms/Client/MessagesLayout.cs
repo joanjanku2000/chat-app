@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Forms;
 
 namespace Chat_application_with_windows_forms.Client
@@ -19,7 +20,7 @@ namespace Chat_application_with_windows_forms.Client
         IHubProxy _hubProxy;
         private User loggedUser;
         public MessagesLayout(User loggedUser)
-        {
+        {   
             this.loggedUser = loggedUser;
             InitializeComponent();
             ConnectAsync();
@@ -87,6 +88,12 @@ namespace Chat_application_with_windows_forms.Client
         private void button1_Click(object sender, EventArgs e)
         {
             _hubProxy.Invoke("Send", loggedUser.phoneNumber, contactTextBox.Text, message.Text);
+        }
+
+        private void MessagesLayout_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Console.WriteLine("Exiting app");
+            System.Windows.Forms.Application.ExitThread();
         }
     }
 }
