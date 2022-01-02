@@ -35,7 +35,7 @@ namespace Chat_application_with_windows_forms.Entities
       
         public string fullname()
         {
-            return this.name + " " + this.lastName;
+            return this.name.Trim() + " " + this.lastName.Trim();
         }
         public override string ToString()
         {

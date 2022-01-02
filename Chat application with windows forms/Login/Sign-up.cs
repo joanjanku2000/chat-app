@@ -174,5 +174,34 @@ namespace Chat_application_with_windows_forms.Login
         {
             return true;
         }
+
+
+        private void password_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                SqlConnection sql = DatabaseConnection.getInstance();
+                Console.WriteLine("Connected to database {0}", sql.ToString());
+                string phoneNumber = phone_number.Text;
+                string psw = password.Text;
+
+                if (true && sql != null)
+                {
+
+                    this.loggedUser = login(phoneNumber, psw);
+                    if (loggedUser != null)
+                    {
+                        this.Hide();
+                        //  Form1 form1 = new Form1(loggedUser);
+                        MessagesLayout messageLayout = new MessagesLayout(loggedUser);
+                        messageLayout.Show();
+                        //  form1.Show();
+                    }
+
+                }
+
+            }
+        }
     }
 }

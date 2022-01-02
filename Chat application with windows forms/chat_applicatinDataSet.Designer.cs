@@ -338,6 +338,10 @@ namespace Chat_application_with_windows_forms {
             
             private global::System.Data.DataColumn columnattachment;
             
+            private global::System.Data.DataColumn columnreceived;
+            
+            private global::System.Data.DataColumn columnseen;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public user_messageDataTable() {
@@ -413,6 +417,22 @@ namespace Chat_application_with_windows_forms {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn receivedColumn {
+                get {
+                    return this.columnreceived;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public global::System.Data.DataColumn seenColumn {
+                get {
+                    return this.columnseen;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -448,14 +468,16 @@ namespace Chat_application_with_windows_forms {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
-            public user_messageRow Adduser_messageRow(userrRow parentuserrRowByFK_sender, userrRow parentuserrRowByFK_Receiver, string message, string attachment) {
+            public user_messageRow Adduser_messageRow(userrRow parentuserrRowByFK_sender, userrRow parentuserrRowByFK_Receiver, string message, string attachment, bool received, bool seen) {
                 user_messageRow rowuser_messageRow = ((user_messageRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         null,
                         null,
                         null,
                         message,
-                        attachment};
+                        attachment,
+                        received,
+                        seen};
                 if ((parentuserrRowByFK_sender != null)) {
                     columnValuesArray[1] = parentuserrRowByFK_sender[0];
                 }
@@ -489,6 +511,8 @@ namespace Chat_application_with_windows_forms {
                 this.columnreceiver_id = base.Columns["receiver_id"];
                 this.columnmessage = base.Columns["message"];
                 this.columnattachment = base.Columns["attachment"];
+                this.columnreceived = base.Columns["received"];
+                this.columnseen = base.Columns["seen"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -504,6 +528,10 @@ namespace Chat_application_with_windows_forms {
                 base.Columns.Add(this.columnmessage);
                 this.columnattachment = new global::System.Data.DataColumn("attachment", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnattachment);
+                this.columnreceived = new global::System.Data.DataColumn("received", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnreceived);
+                this.columnseen = new global::System.Data.DataColumn("seen", typeof(bool), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnseen);
                 this.columnid.AutoIncrement = true;
                 this.columnid.AutoIncrementSeed = -1;
                 this.columnid.AutoIncrementStep = -1;
@@ -1039,6 +1067,38 @@ namespace Chat_application_with_windows_forms {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool received {
+                get {
+                    try {
+                        return ((bool)(this[this.tableuser_message.receivedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'received\' in table \'user_message\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableuser_message.receivedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool seen {
+                get {
+                    try {
+                        return ((bool)(this[this.tableuser_message.seenColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'seen\' in table \'user_message\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableuser_message.seenColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public userrRow userrRowByFK_Receiver {
                 get {
                     return ((userrRow)(this.GetParentRow(this.Table.ParentRelations["FK_Receiver"])));
@@ -1069,6 +1129,30 @@ namespace Chat_application_with_windows_forms {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
             public void SetattachmentNull() {
                 this[this.tableuser_message.attachmentColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsreceivedNull() {
+                return this.IsNull(this.tableuser_message.receivedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetreceivedNull() {
+                this[this.tableuser_message.receivedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public bool IsseenNull() {
+                return this.IsNull(this.tableuser_message.seenColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
+            public void SetseenNull() {
+                this[this.tableuser_message.seenColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -1413,16 +1497,21 @@ namespace Chat_application_with_windows_forms.chat_applicatinDataSetTableAdapter
             tableMapping.ColumnMappings.Add("receiver_id", "receiver_id");
             tableMapping.ColumnMappings.Add("message", "message");
             tableMapping.ColumnMappings.Add("attachment", "attachment");
+            tableMapping.ColumnMappings.Add("received", "received");
+            tableMapping.ColumnMappings.Add("seen", "seen");
             this._adapter.TableMappings.Add(tableMapping);
             this._adapter.InsertCommand = new global::System.Data.SqlClient.SqlCommand();
             this._adapter.InsertCommand.Connection = this.Connection;
-            this._adapter.InsertCommand.CommandText = "INSERT INTO [dbo].[user_message] ([sender_id], [receiver_id], [message], [attachm" +
-                "ent]) VALUES (@sender_id, @receiver_id, @message, @attachment)";
+            this._adapter.InsertCommand.CommandText = "INSERT INTO [user_message] ([sender_id], [receiver_id], [message], [attachment], " +
+                "[received], [seen]) VALUES (@sender_id, @receiver_id, @message, @attachment, @re" +
+                "ceived, @seen)";
             this._adapter.InsertCommand.CommandType = global::System.Data.CommandType.Text;
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@sender_id", global::System.Data.SqlDbType.BigInt, 0, global::System.Data.ParameterDirection.Input, 0, 0, "sender_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@receiver_id", global::System.Data.SqlDbType.BigInt, 0, global::System.Data.ParameterDirection.Input, 0, 0, "receiver_id", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@message", global::System.Data.SqlDbType.Text, 0, global::System.Data.ParameterDirection.Input, 0, 0, "message", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
             this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@attachment", global::System.Data.SqlDbType.Text, 0, global::System.Data.ParameterDirection.Input, 0, 0, "attachment", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@received", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "received", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
+            this._adapter.InsertCommand.Parameters.Add(new global::System.Data.SqlClient.SqlParameter("@seen", global::System.Data.SqlDbType.Bit, 0, global::System.Data.ParameterDirection.Input, 0, 0, "seen", global::System.Data.DataRowVersion.Current, false, null, "", "", ""));
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1438,7 +1527,8 @@ namespace Chat_application_with_windows_forms.chat_applicatinDataSetTableAdapter
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT id, sender_id, receiver_id, message, attachment FROM dbo.user_message";
+            this._commandCollection[0].CommandText = "SELECT id, sender_id, receiver_id, message, attachment, received, seen FROM user_" +
+                "message";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         
@@ -1499,7 +1589,7 @@ namespace Chat_application_with_windows_forms.chat_applicatinDataSetTableAdapter
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "16.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Insert, true)]
-        public virtual int Insert(long sender_id, long receiver_id, string message, string attachment) {
+        public virtual int Insert(long sender_id, long receiver_id, string message, string attachment, global::System.Nullable<bool> received, global::System.Nullable<bool> seen) {
             this.Adapter.InsertCommand.Parameters[0].Value = ((long)(sender_id));
             this.Adapter.InsertCommand.Parameters[1].Value = ((long)(receiver_id));
             if ((message == null)) {
@@ -1513,6 +1603,18 @@ namespace Chat_application_with_windows_forms.chat_applicatinDataSetTableAdapter
             }
             else {
                 this.Adapter.InsertCommand.Parameters[3].Value = ((string)(attachment));
+            }
+            if ((received.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[4].Value = ((bool)(received.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[4].Value = global::System.DBNull.Value;
+            }
+            if ((seen.HasValue == true)) {
+                this.Adapter.InsertCommand.Parameters[5].Value = ((bool)(seen.Value));
+            }
+            else {
+                this.Adapter.InsertCommand.Parameters[5].Value = global::System.DBNull.Value;
             }
             global::System.Data.ConnectionState previousConnectionState = this.Adapter.InsertCommand.Connection.State;
             if (((this.Adapter.InsertCommand.Connection.State & global::System.Data.ConnectionState.Open) 
@@ -1713,7 +1815,7 @@ SELECT id, name, last_name, phone_number, passwordd FROM userr WHERE (id = @id)"
             this._commandCollection = new global::System.Data.SqlClient.SqlCommand[1];
             this._commandCollection[0] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[0].Connection = this.Connection;
-            this._commandCollection[0].CommandText = "SELECT id, name, last_name, phone_number, passwordd FROM dbo.userr";
+            this._commandCollection[0].CommandText = "SELECT id, name, last_name, phone_number, passwordd, namee, online FROM userr";
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
         }
         

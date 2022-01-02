@@ -98,6 +98,7 @@ namespace Chat_application_with_windows_forms.Login
             this.password.Name = "password";
             this.password.Size = new System.Drawing.Size(248, 27);
             this.password.TabIndex = 4;
+            this.password.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.password_KeyPress);
             // 
             // log_in
             // 

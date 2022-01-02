@@ -29,7 +29,7 @@ namespace Chat_application_with_windows_forms.Repository.user
         }
 
 
-        public User findUserById(int id)
+        public User findUserById(Int64 id)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
             conn.Open();
@@ -47,11 +47,11 @@ namespace Chat_application_with_windows_forms.Repository.user
             }
             if (count > 1)
             {
-                // excepion
+                throw new NotFoundException("Multiple users with this id");
             }
             if (count == 0)
             {
-                // exception
+                throw new NotFoundException("User not found");
             }
             conn.Close();
             return toReturn;
@@ -102,8 +102,8 @@ namespace Chat_application_with_windows_forms.Repository.user
             sqlCommand.Parameters.AddWithValue("@Phonenumber", phoneNumber);
         
 
-            List<User> users = new List<User>();
 
+            List<User> users = new List<User>();
 
             using (SqlDataReader reader = sqlCommand.ExecuteReader())
             {

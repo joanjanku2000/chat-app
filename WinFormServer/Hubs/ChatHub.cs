@@ -47,7 +47,7 @@ namespace Chat_application_with_windows_forms.Hubs
             foreach (KeyValuePair<string, string> entry in reversed_users)
             {
                 Console.WriteLine(entry.Key + " : " + entry.Value);
-                if (entry.Key.Trim().CompareTo(receiver)==0)
+                if (entry.Key.Trim().CompareTo(receiver.Trim())==0)
                 {
                     Console.WriteLine("HUB : Found reciver he is {0}",entry.Key);
                     receiverConId = entry.Value;
