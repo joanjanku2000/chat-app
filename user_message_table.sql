@@ -17,3 +17,9 @@ CREATE TABLE [dbo].[user_message](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
+
+alter table dbo.user_message
+add received bit;
+
+alter table dbo.user_message
+add seen bit;
