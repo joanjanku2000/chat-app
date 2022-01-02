@@ -16,3 +16,5 @@ CREATE TABLE [dbo].[user](
 ) ON [PRIMARY]
 GO
 
+alter table dbo.userr
+add  online bit;
