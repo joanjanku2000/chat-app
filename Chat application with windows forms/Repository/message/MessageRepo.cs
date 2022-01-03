@@ -19,12 +19,12 @@ namespace Chat_application_with_windows_forms.Entities
             = "insert into user_message(sender_id,receiver_id,message,received,seen)  output INSERTED.ID " +
             "values (@Senderid, @Receiverid, @Message,0,0)";
         private static string FIND_MESSAGES_OF_USERS =
-            "select * from user_message where sender_id = @Senderid and receiver_id = @Receiverid";
+            "select * from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) or (sender_id = @Receiverid and receiver_id = @Senderid) order by id";
         private static string FIND_CHATS_OF_USER = "select distinct(receiver_id) as receiver " +
             "from dbo.user_message " +
             "where sender_id = @Senderid group by receiver_id;";
         private static string FIND_MESSAGE_BY_ID = "select * from user_message where id = @Id";
-
+        private static string SEE_MESSAGE = "update user_message set seen = 1 where id = @Id";
 
         public MessageRepo ()
         {
@@ -191,6 +191,21 @@ namespace Chat_application_with_windows_forms.Entities
             }
 
             return toReturn;
+        }
+
+        public void seeMessage(long id)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            sqlCommand.CommandText = SEE_MESSAGE;
+            sqlCommand.Parameters.AddWithValue("@Id", id);
+           
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
         }
     }
 }

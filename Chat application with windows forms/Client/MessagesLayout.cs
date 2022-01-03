@@ -39,6 +39,7 @@ namespace Chat_application_with_windows_forms.Client
 
         private List<Entities.Message> userChatsFromDatabase = new List<Entities.Message>();
         private List<Entities.Message> activeChatMessages = new List<Entities.Message>(); //this field will shift pretty often
+        
         public MessagesLayout(User loggedUser)
         {
             InitializeComponent();
@@ -62,12 +63,13 @@ namespace Chat_application_with_windows_forms.Client
             {
                 if (loggedUser.phoneNumber.Trim().Equals(mes.sender.phoneNumber.Trim()))
                 {
-                    createActiveChat(mes.receiver.fullname(), mes.message, y, mes.receiver.phoneNumber, true);
+                    createActiveChat(mes.receiver.fullname(), mes.message, y, mes.receiver.phoneNumber, true,mes.seen);
                 }
                 else
                 {
-                    createActiveChat(mes.sender.fullname(), mes.message, y, mes.sender.phoneNumber, false);
+                    createActiveChat(mes.sender.fullname(), mes.message, y, mes.sender.phoneNumber, false,mes.seen);
                 }
+                y += 43;
             }
 
             chatPanelPopulation();
@@ -106,16 +108,18 @@ namespace Chat_application_with_windows_forms.Client
             {
                 User senderUser = userRepo.findUserByPhoneNumber(sender);
                 User receiverUser = userRepo.findUserByPhoneNumber(receiver);
-                if (loggedUser.phoneNumber.Equals(sender))
+                ChatPanel addedChat;
+                 if (loggedUser.phoneNumber.Equals(sender))
                 {
-                    createActiveChat(receiverUser.fullname(), message, y, receiver,true);
+                    addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver,true,false);
                 }
                 else
                 {
-                    createActiveChat(senderUser.fullname(), message, y, sender,false);
+                    addedChat = createActiveChat(senderUser.fullname(), message, y, sender,false,false);
                 }
-                y += 38;
+                y += 38; 
                 Console.WriteLine("Chats length {0}", chats.Count);
+
                 chatPanelPopulation();
 
                 if (loggedUser.phoneNumber.Trim().Equals(sender.Trim()))
@@ -127,8 +131,24 @@ namespace Chat_application_with_windows_forms.Client
                     AppendTextBox(sender + ":  " + message);
                 }
 
-                messageRepo.sendMessage(senderUser, receiverUser, message);
+                if (loggedUser.phoneNumber.Trim().Equals(receiverUser.phoneNumber.Trim())) {
+                    Entities.Message toBeSaved = messageRepo.sendMessage(senderUser, receiverUser, message);
+                    if (selectedUserToMessage!= null && selectedUserToMessage.id.Equals(senderUser.id))
+                    {
+                        Console.WriteLine("Seeing message since selected user is the sender");
+                        messageRepo.seeMessage(toBeSaved.id);
+                        addedChat.Invoke(
+                            new Action(() =>
+                            {
+                                Console.WriteLine("Changing the color of chat ");
+                                addedChat.BackColor = Color.AliceBlue;
+                            }));
+                     }
+                }
+            
                 Console.WriteLine("Successfully wrote the message to the database");
+
+             
             }
             catch (NotFoundException)
             {
@@ -138,6 +158,7 @@ namespace Chat_application_with_windows_forms.Client
         }
         private void populateChatBox()
         {
+            textBox1.Clear();
             foreach (Entities.Message m in activeChatMessages)
             {
                 if (loggedUser.phoneNumber.Trim().Equals(m.sender.phoneNumber.Trim()))
@@ -152,7 +173,6 @@ namespace Chat_application_with_windows_forms.Client
         }
         private void chatPanelPopulation()
         {
-          
             chat_panel.Invoke(new Action(() => chat_panel.Controls.Clear()));
             foreach(ChatPanel chat  in chats)
             {
@@ -292,11 +312,11 @@ namespace Chat_application_with_windows_forms.Client
       
        
 
-        private ChatPanel createActiveChat(string name,string message, int yLocation,string phonenumber,bool you)
+        private ChatPanel createActiveChat(string nameToBeShown,string message, int yLocation,string phonenumber,bool you,bool seen)
         {
           
             Label nameL = new Label();
-            nameL.Text = name;
+            nameL.Text = nameToBeShown;
             nameL.Location = new Point(1, 2);
             nameL.Font = new Font("Book Antiqua", 12, FontStyle.Bold);
             Label messageL = new Label();
@@ -309,8 +329,9 @@ namespace Chat_application_with_windows_forms.Client
             }
 
             messageL.Location = new Point(1, nameL.Height + 2);
-            messageL.Font = new Font("Times New Roman", 12, FontStyle.Italic);
-
+            messageL.Font = new Font("Times New Roman", 11, FontStyle.Italic);
+            
+           
             ChatPanel existingPanel = chatExists(phonenumber);
             if (existingPanel != null)
             {
@@ -325,7 +346,17 @@ namespace Chat_application_with_windows_forms.Client
                     existingPanel.Controls.Add(messageL);
                     existingPanel.Click += chatSelect_Event;
                 }));
-               
+
+                //if not seen and not you the one who sends it mark it 
+                if (!seen && !you)
+                {
+                    existingPanel.Invoke(
+                        new Action(() =>
+                        {
+                            existingPanel.BackColor = Color.Green;
+                        }));
+                }
+
                 return existingPanel;
             } else
             {
@@ -344,6 +375,17 @@ namespace Chat_application_with_windows_forms.Client
                 chats.Add(p);
                 p.MouseClick += chatSelect_Event;
                 p.BackColor = Color.AliceBlue;
+
+                if (!seen && !you)
+                {
+                    p.BackColor = Color.Green;
+                   /* p.Invoke(
+                        new Action(() =>
+                        {
+                          
+                        })); */
+                }
+
                 return p;
             }    
         }
@@ -364,25 +406,40 @@ namespace Chat_application_with_windows_forms.Client
         {
             ChatPanel selected = (ChatPanel)sender;
             Console.WriteLine("Selected {0}", selected.phoneNumber);
-            if (selected.phoneNumber != null)
-                selectedUserToMessage = userRepo.findUserByPhoneNumber(selected.phoneNumber.Trim());
-            Console.WriteLine("Changing color ");
-            selected.BackColor = Color.White;
 
-            foreach (ChatPanel p in chats)
+            if (selectedUserToMessage == null || !selected.phoneNumber.Trim().Equals(selectedUserToMessage.phoneNumber.Trim()))
             {
-                if (!p.phoneNumber.Trim().Equals(selected.phoneNumber.Trim()))
+
+                if (selected.phoneNumber != null)
                 {
-                    Console.WriteLine("Reverting color ");
-                    selected.BackColor = Color.AliceBlue;
+                    selectedUserToMessage = userRepo.findUserByPhoneNumber(selected.phoneNumber.Trim());
                 }
+
+
+                Console.WriteLine("Changing color ");
+                selected.BackColor = Color.White;
+
+                foreach (ChatPanel p in chats)
+                {
+                    if (!p.phoneNumber.Trim().Equals(selected.phoneNumber.Trim()))
+                    {
+                        Console.WriteLine("Reverting color ");
+                        selected.BackColor = Color.AliceBlue;
+                    }
+                }
+
+                activeChatMessages = messageRepo.findMessagesOfUsers(loggedUser.id, selectedUserToMessage.id);
+                activeChatMessages.ForEach(message =>
+                {
+                    messageRepo.seeMessage(message.id);
+                });
+                populateChatBox();
             }
 
-            activeChatMessages = messageRepo.findMessagesOfUsers(loggedUser.id, selectedUserToMessage.id);
-            populateChatBox();
 
         }
 
+      
         private void MessagesLayout_Load(object sender, EventArgs e)
         {
             populateChatsFromDatabase();

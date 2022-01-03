@@ -49,6 +49,7 @@ namespace Chat_application_with_windows_forms.Client
             // 
             // textBox1
             // 
+            this.textBox1.Font = new System.Drawing.Font("Bookman Old Style", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.textBox1.Location = new System.Drawing.Point(21, 53);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
@@ -82,6 +83,7 @@ namespace Chat_application_with_windows_forms.Client
             // 
             // message
             // 
+            this.message.Font = new System.Drawing.Font("Bookman Old Style", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.message.Location = new System.Drawing.Point(21, 435);
             this.message.Multiline = true;
             this.message.Name = "message";
@@ -116,7 +118,6 @@ namespace Chat_application_with_windows_forms.Client
             this.chat_panel.Name = "chat_panel";
             this.chat_panel.Size = new System.Drawing.Size(249, 424);
             this.chat_panel.TabIndex = 0;
-    
             // 
             // contacts_groupBox
             // 
