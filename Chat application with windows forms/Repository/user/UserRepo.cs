@@ -32,7 +32,8 @@ namespace Chat_application_with_windows_forms.Repository.user
         public User findUserById(Int64 id)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
             int count = 0;
             sqlCommand.CommandText = FIND_USER_BY_ID;
             sqlCommand.Parameters.AddWithValue("@Id", id);
@@ -47,10 +48,12 @@ namespace Chat_application_with_windows_forms.Repository.user
             }
             if (count > 1)
             {
+                conn.Close();
                 throw new NotFoundException("Multiple users with this id");
             }
             if (count == 0)
             {
+                conn.Close();
                 throw new NotFoundException("User not found");
             }
             conn.Close();
@@ -61,8 +64,8 @@ namespace Chat_application_with_windows_forms.Repository.user
         {
            
             SqlCommand sqlCommand = conn.CreateCommand();
-           
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
             sqlCommand.CommandText = AUTHENTICATE;
             sqlCommand.Parameters.AddWithValue("@Phonenumber", phoneNumber);
             sqlCommand.Parameters.AddWithValue("@Password", password);
@@ -96,8 +99,8 @@ namespace Chat_application_with_windows_forms.Repository.user
         {
 
             SqlCommand sqlCommand = conn.CreateCommand();
-
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
             sqlCommand.CommandText = USER_BY_PHONE_NUMBER;
             sqlCommand.Parameters.AddWithValue("@Phonenumber", phoneNumber);
         
@@ -131,8 +134,8 @@ namespace Chat_application_with_windows_forms.Repository.user
         {
 
             SqlCommand sqlCommand = conn.CreateCommand();
-
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
             sqlCommand.CommandText = PASSWORD_BY_PHONE_NUMBER;
             sqlCommand.Parameters.AddWithValue("@Phonenumber", phoneNumber);
 
@@ -166,8 +169,8 @@ namespace Chat_application_with_windows_forms.Repository.user
         {
 
             SqlCommand sqlCommand = conn.CreateCommand();
-
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
             sqlCommand.CommandText = USER_EXISTS;
             sqlCommand.Parameters.AddWithValue("@Phonenumber", phoneNumber);
 
@@ -188,16 +191,17 @@ namespace Chat_application_with_windows_forms.Repository.user
                         throw new NotFoundException("Multiple phone numbers like this exist, contact admin");
                     }
                 }
-                conn.Close();
+               
             }
-            
+            conn.Close();
             return false;
         }
 
         public Boolean registerUser(User user)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
 
             sqlCommand.CommandText = REGISTER_USER;
             bindParameters(sqlCommand, user);

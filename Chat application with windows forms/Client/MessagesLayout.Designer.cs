@@ -35,13 +35,13 @@ namespace Chat_application_with_windows_forms.Client
             this.message = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.chats_groupBox = new System.Windows.Forms.GroupBox();
+            this.chat_panel = new System.Windows.Forms.Panel();
             this.contacts_groupBox = new System.Windows.Forms.GroupBox();
             this.listView1 = new System.Windows.Forms.ListView();
             this.name = new System.Windows.Forms.Label();
             this.last_name = new System.Windows.Forms.Label();
             this.phone_number = new System.Windows.Forms.Label();
             this.new_contact = new System.Windows.Forms.Button();
-            this.chat_panel = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
             this.chats_groupBox.SuspendLayout();
             this.contacts_groupBox.SuspendLayout();
@@ -56,7 +56,6 @@ namespace Chat_application_with_windows_forms.Client
             this.textBox1.ScrollBars = System.Windows.Forms.ScrollBars.Both;
             this.textBox1.Size = new System.Drawing.Size(613, 358);
             this.textBox1.TabIndex = 5;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // groupBox1
             // 
@@ -108,6 +107,16 @@ namespace Chat_application_with_windows_forms.Client
             this.chats_groupBox.TabIndex = 6;
             this.chats_groupBox.TabStop = false;
             this.chats_groupBox.Text = "Chats";
+            // 
+            // chat_panel
+            // 
+            this.chat_panel.AutoScroll = true;
+            this.chat_panel.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.chat_panel.Location = new System.Drawing.Point(27, 34);
+            this.chat_panel.Name = "chat_panel";
+            this.chat_panel.Size = new System.Drawing.Size(249, 424);
+            this.chat_panel.TabIndex = 0;
+    
             // 
             // contacts_groupBox
             // 
@@ -167,15 +176,6 @@ namespace Chat_application_with_windows_forms.Client
             this.new_contact.Text = "New Contact";
             this.new_contact.UseVisualStyleBackColor = true;
             this.new_contact.Click += new System.EventHandler(this.new_contact_Click);
-            // 
-            // chat_panel
-            // 
-            this.chat_panel.AutoScroll = true;
-            this.chat_panel.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
-            this.chat_panel.Location = new System.Drawing.Point(27, 34);
-            this.chat_panel.Name = "chat_panel";
-            this.chat_panel.Size = new System.Drawing.Size(249, 424);
-            this.chat_panel.TabIndex = 0;
             // 
             // MessagesLayout
             // 

@@ -11,4 +11,9 @@ namespace Chat_application_with_windows_forms.Utils
     {
         public string phoneNumber { get; set; }
     }
+
+    class ChatButton : Button
+    {
+        public string phoneNumber { get; set; }
+    }
 }

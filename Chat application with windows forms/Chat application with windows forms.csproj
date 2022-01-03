@@ -206,6 +206,8 @@
     <Compile Include="Client\MessagesLayout.Designer.cs">
       <DependentUpon>MessagesLayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Message.cs" />
+    <Compile Include="Entities\MessageResult.cs" />
     <Compile Include="MessageBoxes\Form1.cs">
       <SubType>Form</SubType>
     </Compile>
