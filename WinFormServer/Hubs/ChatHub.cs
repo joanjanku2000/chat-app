@@ -37,12 +37,34 @@ namespace Chat_application_with_windows_forms.Hubs
             return base.OnDisconnected(stopCalled);
         }
 
+        public void logout(string phone)
+        {
+            string con = "";
+            reversed_users.TryGetValue(phone.Trim(), out con);
+            reversed_users.Remove(phone);
+            users.Remove(con.Trim());
+            Console.WriteLine("User {0} is now logged out", phone);
+        }
         public void setPhoneNumber(string phone)
         {
+            string existingCon = null;
+
+            reversed_users.TryGetValue(phone.Trim(), out existingCon);
             users[Context.ConnectionId] = phone;
             ClientConnected?.Invoke(Context.ConnectionId);
+
             Console.WriteLine("HUB: Setting phone number {0}", phone);
-            reversed_users.Add(phone, Context.ConnectionId);
+            try
+            {
+                reversed_users.Add(phone, Context.ConnectionId);
+
+            } catch (Exception)
+            {
+                Console.WriteLine("Hub: User is already logged in");
+                Clients.Client(Context.ConnectionId).ShowUserLoggedInError();
+                return;
+            }
+         
 
             Console.WriteLine("Total number of logged users  now is {0} "
                 , reversed_users.Count);
@@ -89,6 +111,7 @@ namespace Chat_application_with_windows_forms.Hubs
             } else
             {
                 Console.WriteLine("COuld not send message");
+                Clients.Client(senderConId).AddMessage(sender, receiver, message);
             }
             
         }

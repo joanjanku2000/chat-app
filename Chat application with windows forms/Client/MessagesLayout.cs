@@ -90,7 +90,9 @@ namespace Chat_application_with_windows_forms.Client
             _hubProxy.On<string, string,string>("AddMessage", (name,reciver, message) => AddMessage(name,reciver,message) );
             
             _hubProxy.On("populateContactBoxWithContacts", () => this.Invoke(new Action(() => populateContactBoxWithContacts())));
-            
+
+            _hubProxy.On("ShowUserLoggedInError", () => ShowUserLoggedInError());
+
             Console.WriteLine("MEthod mapping done");
             
             try
@@ -102,11 +104,20 @@ namespace Chat_application_with_windows_forms.Client
                 Console.WriteLine("Not started");
                 Console.WriteLine(e.Message);
             }
-          
-           
-            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber);
+           await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber);
 
             Console.WriteLine("Connection established");
+        }
+
+        public void ShowUserLoggedInError()
+        {
+            MessageB.ERROR("Je i loguar", "Ju jeni te loguar");
+            _signalRConnection.Dispose();
+            
+            Console.WriteLine("Exiting app");
+            System.Windows.Forms.Application.ExitThread();
+            this.Close();
+            this.Dispose();
         }
 
         int y = 2;
@@ -138,8 +149,8 @@ namespace Chat_application_with_windows_forms.Client
                 {
                     AppendTextBox(sender + ":  " + message);
                 }
-
-                if (loggedUser.phoneNumber.Trim().Equals(receiverUser.phoneNumber.Trim())) {
+                
+                if (loggedUser.phoneNumber.Trim().Equals(senderUser.phoneNumber.Trim())) {
                     Entities.Message toBeSaved = messageRepo.sendMessage(senderUser, receiverUser, message);
                     if (selectedUserToMessage!= null && selectedUserToMessage.id.Equals(senderUser.id))
                     {

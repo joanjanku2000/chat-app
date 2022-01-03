@@ -192,7 +192,7 @@ namespace Chat_application_with_windows_forms.Entities
 
             return toReturn;
         }
-
+   
         public void seeMessage(long id)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
