@@ -17,6 +17,7 @@ using Chat_application_with_windows_forms.Repository.user;
 using Chat_application_with_windows_forms.Exceptions;
 using Chat_application_with_windows_forms.Repository.contacts;
 using static System.Windows.Forms.ListView;
+using Chat_application_with_windows_forms.Utils;
 
 namespace Chat_application_with_windows_forms.Client
 {
@@ -29,6 +30,7 @@ namespace Chat_application_with_windows_forms.Client
         private ContactsRepo contactsRepo;
         private List<User> contacts;
         private Dictionary<ListViewItem, Int64> contactListItem = new Dictionary<ListViewItem, long>();
+        private List<ChatPanel> chats = new List<ChatPanel>();
         private User selectedUserToMessage; //this field will shift pretty often
         public MessagesLayout(User loggedUser)
         {
@@ -78,16 +80,44 @@ namespace Chat_application_with_windows_forms.Client
         {
 
         }
-
+        int y = 2;
         public void AddMessage(string sender, string message)
         {
-            if (loggedUser.phoneNumber.Trim().Equals(sender.Trim())){
-                AppendTextBox("You: " + "  " + message);
-            } else
+            try
             {
-                AppendTextBox(sender + ":  " + message);
+                User senderUser = userRepo.findUserByPhoneNumber(sender);
+
+                createActiveChat(senderUser.fullname(), message, y, sender);
+                y += 35;
+                Console.WriteLine("Chats length {0}", chats.Count);
+                chatPanelPopulation(senderUser.fullname(), message, y, sender);
+
+              
+                if (loggedUser.phoneNumber.Trim().Equals(sender.Trim()))
+                {
+                    AppendTextBox("You: " + "  " + message);
+                }
+                else
+                {
+                    AppendTextBox(sender + ":  " + message);
+                }
             }
-           
+            catch (NotFoundException)
+            {
+                Console.WriteLine("Not found user (AddMessage method)");
+            }
+
+        }
+
+        private void chatPanelPopulation(string sender,string message, int y, string sendersPhone)
+        {
+           // ChatPanel ch = createActiveChat(sender, message, y, sender);
+
+            chat_panel.Invoke(new Action(() => chat_panel.Controls.Clear()));
+            foreach(ChatPanel chat  in chats)
+            {
+                chat_panel.Invoke(new Action(() => chat_panel.Controls.Add(chat)));
+            }
         }
         public void AppendTextBox(string value)
         {
@@ -145,8 +175,7 @@ namespace Chat_application_with_windows_forms.Client
 
         private void populateContactBoxWithContacts()
         {
-            int beginY = 22;
-            int x = 8;
+          
             
             populateContactsList();
 
@@ -221,6 +250,61 @@ namespace Chat_application_with_windows_forms.Client
         void getMessageDataFromTheDatabase(long contactId)
         {
 
+        }
+
+      
+       
+
+        private ChatPanel createActiveChat(string name,string message, int yLocation,string phonenumber)
+        {
+            Label nameL = new Label();
+            nameL.Text = name;
+            nameL.Location = new Point(1, 2);
+            nameL.Font = new Font("Book Antiqua", 12, FontStyle.Bold);
+            Label messageL = new Label();
+            messageL.Text = message;
+            messageL.Location = new Point(1, nameL.Height + 2);
+            messageL.Font = new Font("Times New Roman", 12, FontStyle.Italic);
+
+            ChatPanel existingPanel = chatExists(phonenumber);
+            if (existingPanel != null)
+            {
+                existingPanel.Invoke(new Action(() =>
+                {
+                    existingPanel.Controls.Clear();
+                    existingPanel.Controls.Add(nameL);
+                    existingPanel.Controls.Add(messageL);
+                }));
+               
+                return existingPanel;
+            } else
+            {
+                ChatPanel p = new ChatPanel();
+                p.phoneNumber = phonenumber;
+
+                p.Visible = true;
+                p.Size = new Size(chat_panel.Width, 50);
+                p.Location = new Point(0, yLocation);
+
+                p.Controls.Add(nameL);
+                p.Controls.Add(messageL);
+
+                p.BorderStyle = BorderStyle.FixedSingle;
+                chats.Add(p);
+                return p;
+            }    
+        }
+
+        private ChatPanel chatExists(string phonenumber)
+        {
+            foreach(ChatPanel chat in chats)
+            {
+                if (chat.phoneNumber.Trim().Equals(phonenumber.Trim()))
+                {
+                    return chat;
+                }
+            }
+            return null;
         }
     }
 

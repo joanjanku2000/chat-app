@@ -41,7 +41,9 @@ namespace Chat_application_with_windows_forms.Client
             this.last_name = new System.Windows.Forms.Label();
             this.phone_number = new System.Windows.Forms.Label();
             this.new_contact = new System.Windows.Forms.Button();
+            this.chat_panel = new System.Windows.Forms.Panel();
             this.groupBox1.SuspendLayout();
+            this.chats_groupBox.SuspendLayout();
             this.contacts_groupBox.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -99,6 +101,7 @@ namespace Chat_application_with_windows_forms.Client
             // 
             // chats_groupBox
             // 
+            this.chats_groupBox.Controls.Add(this.chat_panel);
             this.chats_groupBox.Location = new System.Drawing.Point(281, 80);
             this.chats_groupBox.Name = "chats_groupBox";
             this.chats_groupBox.Size = new System.Drawing.Size(311, 480);
@@ -120,7 +123,7 @@ namespace Chat_application_with_windows_forms.Client
             // 
             this.listView1.Font = new System.Drawing.Font("Book Antiqua", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(16, 21);
+            this.listView1.Location = new System.Drawing.Point(6, 21);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(192, 449);
             this.listView1.TabIndex = 0;
@@ -165,10 +168,20 @@ namespace Chat_application_with_windows_forms.Client
             this.new_contact.UseVisualStyleBackColor = true;
             this.new_contact.Click += new System.EventHandler(this.new_contact_Click);
             // 
+            // chat_panel
+            // 
+            this.chat_panel.AutoScroll = true;
+            this.chat_panel.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
+            this.chat_panel.Location = new System.Drawing.Point(27, 34);
+            this.chat_panel.Name = "chat_panel";
+            this.chat_panel.Size = new System.Drawing.Size(249, 424);
+            this.chat_panel.TabIndex = 0;
+            // 
             // MessagesLayout
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1348, 605);
             this.Controls.Add(this.new_contact);
             this.Controls.Add(this.phone_number);
@@ -183,6 +196,7 @@ namespace Chat_application_with_windows_forms.Client
             this.Load += new System.EventHandler(this.MessagesLayout_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.chats_groupBox.ResumeLayout(false);
             this.contacts_groupBox.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -203,5 +217,6 @@ namespace Chat_application_with_windows_forms.Client
         private System.Windows.Forms.Label phone_number;
         private System.Windows.Forms.Button new_contact;
         private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.Panel chat_panel;
     }
 }
