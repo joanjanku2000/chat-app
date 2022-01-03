@@ -23,6 +23,9 @@ namespace Chat_application_with_windows_forms.Repository.user
         private string USER_EXISTS = "SELECT count(*) FROM DBO.USERR WHERE phone_number = @Phonenumber";
         private string REGISTER_USER = "INSERT INTO DBO.USERR (NAMEE,LAST_NAME,PHONE_NUMBER,PASSWORDD) VALUES" +
             "(@Name, @Lastname , @Phonenumber,@Password) ";
+
+        private string SET_USER_ONLINE = "update userr set online = 1 where id = @Id";
+        private string SET_USER_OFFLINE = "update userr set online = 0 where id = @Id";
         public UserRepo()
         {
             conn = DatabaseConnection.getInstance();
@@ -42,7 +45,7 @@ namespace Chat_application_with_windows_forms.Repository.user
             {
                 while (reader.Read())
                 {
-                    toReturn = extractUser(reader);
+                    toReturn = extractUserWithStatus(reader);
                     count++;
                 }
             }
@@ -226,6 +229,45 @@ namespace Chat_application_with_windows_forms.Repository.user
                         , reader.GetString(2), reader.GetString(3));
         }
 
-        
+        private User extractUserWithStatus(SqlDataReader reader)
+        {
+            return new User(reader.GetInt64(0), reader.GetString(1)
+                        , reader.GetString(2), reader.GetString(3),reader.GetBoolean(5));
+        }
+
+        public void setUserOnline(long id)
+        {
+            Console.WriteLine("Setting user with id {0} as online", id);
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            sqlCommand.CommandText = SET_USER_ONLINE;
+            sqlCommand.Parameters.AddWithValue("@Id", id);
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.ExecuteNonQuery();
+
+            if (conn.State == System.Data.ConnectionState.Open)
+                conn.Close();
+        }
+
+        public void setUserOffline(long id)
+        {
+            Console.WriteLine("Setting user with id {0} as offline", id);
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            sqlCommand.CommandText = SET_USER_OFFLINE;
+            sqlCommand.Parameters.AddWithValue("@Id", id);
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.ExecuteNonQuery();
+
+            if (conn.State == System.Data.ConnectionState.Open)
+                conn.Close();
+        }
+
     }
 }

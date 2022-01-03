@@ -18,6 +18,7 @@ using Chat_application_with_windows_forms.Exceptions;
 using Chat_application_with_windows_forms.Repository.contacts;
 using static System.Windows.Forms.ListView;
 using Chat_application_with_windows_forms.Utils;
+using System.Threading;
 
 namespace Chat_application_with_windows_forms.Client
 {
@@ -51,10 +52,12 @@ namespace Chat_application_with_windows_forms.Client
             userRepo = new UserRepo();
             messageRepo = new MessageRepo();
             userChatsFromDatabase = messageRepo.findChatsOfUser(loggedUser.id);
-            
-            populateContactBoxWithContacts();
+         
+          //  populateContactBoxWithContacts();
            
             ConnectAsync();
+
+            userRepo.setUserOnline(loggedUser.id);
         }
         private void populateChatsFromDatabase()
         {
@@ -83,8 +86,13 @@ namespace Chat_application_with_windows_forms.Client
             Console.WriteLine("Initialized hub connection");
             _hubProxy = _signalRConnection.CreateHubProxy("ChatHub");
             Console.WriteLine("Creating proxy");
+            
             _hubProxy.On<string, string,string>("AddMessage", (name,reciver, message) => AddMessage(name,reciver,message) );
+            
+            _hubProxy.On("populateContactBoxWithContacts", () => this.Invoke(new Action(() => populateContactBoxWithContacts())));
+            
             Console.WriteLine("MEthod mapping done");
+            
             try
             {
                 await _signalRConnection.Start();
@@ -199,6 +207,8 @@ namespace Chat_application_with_windows_forms.Client
 
         private void MessagesLayout_FormClosing(object sender, FormClosingEventArgs e)
         {
+            userRepo.setUserOffline(loggedUser.id);
+            _signalRConnection.Dispose();        
             Console.WriteLine("Exiting app");
             System.Windows.Forms.Application.ExitThread();
         }
@@ -232,22 +242,36 @@ namespace Chat_application_with_windows_forms.Client
             }
            
         }
-
+     
         private void populateContactBoxWithContacts()
         {
             populateContactsList();
 
             Console.WriteLine("Found {0} contacts", contacts.Count);
+           
+            if (listView1.Items.Count != 0)
+            {
+                listView1.Items.Clear();
+            }
+         
             foreach (User c in contacts)
             {
-                Console.WriteLine("Adding {0} to list", c.fullname());
+                Console.WriteLine("Adding {0} to list who is active: [{1}]", c.fullname(),c.online);
                 ListViewItem listViewItem = new ListViewItem();
                 listViewItem.Text = c.fullname().Trim();
-               
+                listViewItem.EnsureVisible();
+                if (c.online)
+                {
+                    listViewItem.ForeColor = Color.Green;
+                    listViewItem.Text += " (On)";
+                }
+
                 listViewItem.EnsureVisible();
                 contactListItem.Add(listViewItem, c.id);
-                listView1.Items.Add(listViewItem);
+
                
+                Console.WriteLine("Handle created {0}", listView1.IsHandleCreated);
+                listView1.Items.Add(listViewItem);           
             }
 
         }
@@ -257,13 +281,19 @@ namespace Chat_application_with_windows_forms.Client
             {
                 contacts = new List<User>();
             }
+            if (contacts.Count != 0)
+            {
+                contacts.Clear();
+            }
+            
             List<long> contactIds = contactsRepo.findContactsOfUser(loggedUser.id);
-
+            Console.WriteLine("Got contact ids");
             foreach (Int64 id in contactIds)
             {
                 try
                 {
                     contacts.Add(userRepo.findUserById(id));
+                    Console.WriteLine("Adding contacts");
                 }
                 catch (NotFoundException)
                 {
@@ -379,11 +409,7 @@ namespace Chat_application_with_windows_forms.Client
                 if (!seen && !you)
                 {
                     p.BackColor = Color.Green;
-                   /* p.Invoke(
-                        new Action(() =>
-                        {
-                          
-                        })); */
+                   
                 }
 
                 return p;

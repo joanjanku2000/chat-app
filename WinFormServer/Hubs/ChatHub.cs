@@ -15,11 +15,26 @@ namespace Chat_application_with_windows_forms.Hubs
         static Dictionary<string, string> reversed_users = new Dictionary<string, string>();
 
         public static event ClientConnectionEventHandler ClientConnected;
+        /**
+         * Used to refresh the list of contacts in all logged users since another
+         * User joined
+         * */
         public override Task OnConnected()
         {
             users.Add(Context.ConnectionId, Context.ConnectionId);
             Console.WriteLine("Hub: User connected {0}", Context.ConnectionId);
+           
             return base.OnConnected();
+        }
+        /**
+         * Used to refresh the list of contacts in all logged users since another
+         * User left
+         * */
+        public override Task OnDisconnected(bool stopCalled)
+        {
+            Console.WriteLine("Hub: Refreshing lists on all connected clients since someone just left");
+            Clients.All.populateContactBoxWithContacts();
+            return base.OnDisconnected(stopCalled);
         }
 
         public void setPhoneNumber(string phone)
@@ -36,6 +51,8 @@ namespace Chat_application_with_windows_forms.Hubs
             {
                 Console.WriteLine(entry.Key + " : " + entry.Value);
             }
+
+            Clients.All.populateContactBoxWithContacts();
         }
 
         public void Send(string sender,string receiver,string message)

@@ -13,13 +13,27 @@ namespace Chat_application_with_windows_forms.Entities
         public string lastName { get; set; }
         public string phoneNumber { get; set; }
 
+        public bool online {get; set;}
+
         public string hashedPassword;
-        public  User (Int64 id, string name, string lastName,string phoneNumber)
+
+
+        public  User (Int64 id, string name, string lastName,string phoneNumber,bool online)
         {
             this.id = id;
             this.name = name;
             this.lastName = lastName;
             this.phoneNumber = phoneNumber;
+            this.online = online;
+        }
+
+        public User(Int64 id, string name, string lastName, string phoneNumber)
+        {
+            this.id = id;
+            this.name = name;
+            this.lastName = lastName;
+            this.phoneNumber = phoneNumber;
+           
         }
 
         public User( string name, string lastName, string phoneNumber, string hashedPasswod)
