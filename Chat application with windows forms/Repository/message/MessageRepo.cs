@@ -24,7 +24,9 @@ namespace Chat_application_with_windows_forms.Entities
             "from dbo.user_message " +
             "where sender_id = @Senderid group by receiver_id;";
         private static string FIND_MESSAGE_BY_ID = "select * from user_message where id = @Id";
-        private static string SEE_MESSAGE = "update user_message set seen = 1 where id = @Id";
+        private static string SEE_MESSAGE = "update user_message set seen = 1 where id = (select Max(id) from user_message where sender_id = @Senderid and receiver_id=@Receiverid )";
+
+        private static string SEE_MESSAGE_BY_ID = "update user_message set seen = 1 where id = @Id";
 
         public MessageRepo ()
         {
@@ -197,7 +199,7 @@ namespace Chat_application_with_windows_forms.Entities
         {
             SqlCommand sqlCommand = conn.CreateCommand();
 
-            sqlCommand.CommandText = SEE_MESSAGE;
+            sqlCommand.CommandText = SEE_MESSAGE_BY_ID;
             sqlCommand.Parameters.AddWithValue("@Id", id);
            
             if (conn.State == System.Data.ConnectionState.Closed)
@@ -207,5 +209,22 @@ namespace Chat_application_with_windows_forms.Entities
 
             conn.Close();
         }
+
+        public void seeMessage(long userid,long receiverid)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            sqlCommand.CommandText = SEE_MESSAGE;
+            sqlCommand.Parameters.AddWithValue("@Senderid", userid);
+            sqlCommand.Parameters.AddWithValue("@Receiverid", receiverid);
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
     }
 }

@@ -75,7 +75,8 @@ namespace Chat_application_with_windows_forms.Repository.contacts
         {
             List<Int64> results = new List<long>();
             SqlCommand sqlCommand = conn.CreateCommand();
-            conn.Open();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
             sqlCommand.CommandText = FIND_CONTACTS_OF_USER;
 
             sqlCommand.Parameters.AddWithValue("@Userid", userId);

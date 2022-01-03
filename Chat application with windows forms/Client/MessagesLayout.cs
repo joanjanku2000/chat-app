@@ -141,30 +141,39 @@ namespace Chat_application_with_windows_forms.Client
 
                 chatPanelPopulation();
 
-                if (loggedUser.phoneNumber.Trim().Equals(sender.Trim()))
+                if (selectedUserToMessage != null)
                 {
-                    AppendTextBox("You: " + "  " + message);
+                    if (loggedUser.phoneNumber.Trim().Equals(sender.Trim()))
+                    {
+                        AppendTextBox("You: " + "  " + message);
+                    }
+                    else
+                    {
+                        AppendTextBox(sender + ":  " + message);
+                    }
                 }
-                else
-                {
-                    AppendTextBox(sender + ":  " + message);
-                }
-                
+               
+
                 if (loggedUser.phoneNumber.Trim().Equals(senderUser.phoneNumber.Trim())) {
                     Entities.Message toBeSaved = messageRepo.sendMessage(senderUser, receiverUser, message);
-                    if (selectedUserToMessage!= null && selectedUserToMessage.id.Equals(senderUser.id))
-                    {
-                        Console.WriteLine("Seeing message since selected user is the sender");
-                        messageRepo.seeMessage(toBeSaved.id);
-                        addedChat.Invoke(
-                            new Action(() =>
-                            {
-                                Console.WriteLine("Changing the color of chat ");
-                                addedChat.BackColor = Color.AliceBlue;
-                            }));
-                     }
+                  
                 }
-            
+
+                if (loggedUser.phoneNumber.Trim().Equals(receiverUser.phoneNumber.Trim()) && selectedUserToMessage != null && selectedUserToMessage.id.Equals(senderUser.id))
+                {
+                    Console.WriteLine("Seeing message since selected user is the sender");
+                    messageRepo.seeMessage(senderUser.id,receiverUser.id);
+                    addedChat.Invoke(
+                           new Action(() =>
+                           {
+                               Console.WriteLine("Changing the color of chat ");
+                               addedChat.BackColor = Color.AliceBlue;
+                           }));
+                }
+               
+
+
+
                 Console.WriteLine("Successfully wrote the message to the database");
 
              
