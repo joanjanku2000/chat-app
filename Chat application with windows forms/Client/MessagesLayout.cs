@@ -53,7 +53,7 @@ namespace Chat_application_with_windows_forms.Client
             Console.WriteLine("Initialized hub connection");
             _hubProxy = _signalRConnection.CreateHubProxy("ChatHub");
             Console.WriteLine("Creating proxy");
-            _hubProxy.On<string, string>("AddMessage", (name, message) => AddMessage(name,message) );
+            _hubProxy.On<string, string,string>("AddMessage", (name,reciver, message) => AddMessage(name,reciver,message) );
             Console.WriteLine("MEthod mapping done");
             try
             {
@@ -81,13 +81,20 @@ namespace Chat_application_with_windows_forms.Client
 
         }
         int y = 2;
-        public void AddMessage(string sender, string message)
+        public void AddMessage(string sender, string receiver, string message)
         {
             try
             {
                 User senderUser = userRepo.findUserByPhoneNumber(sender);
-
-                createActiveChat(senderUser.fullname(), message, y, sender);
+                User receiverUser = userRepo.findUserByPhoneNumber(receiver);
+                if (loggedUser.phoneNumber.Equals(sender))
+                {
+                    createActiveChat(receiverUser.fullname(), message, y, receiver,true);
+                }
+                else
+                {
+                    createActiveChat(senderUser.fullname(), message, y, sender,false);
+                }
                 y += 35;
                 Console.WriteLine("Chats length {0}", chats.Count);
                 chatPanelPopulation(senderUser.fullname(), message, y, sender);
@@ -255,14 +262,20 @@ namespace Chat_application_with_windows_forms.Client
       
        
 
-        private ChatPanel createActiveChat(string name,string message, int yLocation,string phonenumber)
+        private ChatPanel createActiveChat(string name,string message, int yLocation,string phonenumber,bool you)
         {
             Label nameL = new Label();
             nameL.Text = name;
             nameL.Location = new Point(1, 2);
             nameL.Font = new Font("Book Antiqua", 12, FontStyle.Bold);
             Label messageL = new Label();
-            messageL.Text = message;
+            if (you)
+            {
+                messageL.Text = "You: " + message;
+            } else
+            {
+                messageL.Text = message;
+            }
             messageL.Location = new Point(1, nameL.Height + 2);
             messageL.Font = new Font("Times New Roman", 12, FontStyle.Italic);
 

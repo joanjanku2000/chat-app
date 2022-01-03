@@ -67,7 +67,7 @@ namespace Chat_application_with_windows_forms.Hubs
                 Console.WriteLine("Found connection id of  {0}", receiverConId);
                // Clients.Client(receiverConId).AddMessage(sender, message);
                 // Clients.Client(senderConId).A
-                Clients.Clients(conIdsOfParticipants).AddMessage(sender, message);
+                Clients.Clients(conIdsOfParticipants).AddMessage(sender,receiver, message);
                   
             } else
             {
