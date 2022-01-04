@@ -112,8 +112,13 @@ namespace Chat_application_with_windows_forms.Client
         public void ShowUserLoggedInError()
         {
             MessageB.ERROR("Je i loguar", "Ju jeni te loguar");
-            _signalRConnection.Dispose();
-            
+           try
+            {
+                _signalRConnection.Dispose();
+            } catch (Exception)
+            {
+                Console.WriteLine("Server is probably down");
+            }
             Console.WriteLine("Exiting app");
             System.Windows.Forms.Application.ExitThread();
             this.Close();
@@ -149,7 +154,23 @@ namespace Chat_application_with_windows_forms.Client
                     }
                     else
                     {
-                        AppendTextBox(sender + ":  " + message);
+                        string username = null;
+                        foreach (User u in contacts)
+                        {
+                            if (u.phoneNumber.Trim() == sender.Trim())
+                            {
+                                username = u.fullname().Trim();
+                            }
+                        }
+                        if (username != null)
+                        {
+                            AppendTextBox(username.Trim() + ":  " + message.Trim());
+                        }
+                            
+                        else
+                        {
+                            AppendTextBox(sender.Trim() + ":  " + message.Trim());
+                        }
                     }
                 }
                
@@ -191,11 +212,26 @@ namespace Chat_application_with_windows_forms.Client
             {
                 if (loggedUser.phoneNumber.Trim().Equals(m.sender.phoneNumber.Trim()))
                 {
-                    AppendTextBox("You: " + "  " + m.message);
+                    AppendTextBox("You: " + "  " + m.message.Trim());
                 }
                 else
                 {
-                    AppendTextBox(m.sender.fullname().Trim() + ":  " + m.message);
+                    string username = null;
+                    foreach (User u in contacts)
+                    {
+                        if (u.phoneNumber.Trim() == m.sender.phoneNumber.Trim())
+                        {
+                            username = u.fullname().Trim();
+                        }
+                    }
+                    if (username != null)
+                    {
+                        AppendTextBox(username.Trim() + ":  " + m.message.Trim());
+                    } else
+                    {
+                        AppendTextBox(m.sender.phoneNumber.Trim() + ":  " + m.message);
+                    }
+                   
                 }
             }
         }

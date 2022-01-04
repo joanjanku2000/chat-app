@@ -121,7 +121,13 @@
   <data name="28725582-7cba90da-7383-11e7-9a78-a5356c305a6e" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\28725582-7cba90da-7383-11e7-9a78-a5356c305a6e.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Message-Free-Icon-fidswo" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Message-Free-Icon-fidswo.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="download" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\download.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="74-749231_png-file-svg-send-message-icon-png-transparent" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\74-749231_png-file-svg-send-message-icon-png-transparent.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -73,9 +73,29 @@ namespace Chat_application_with_windows_forms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap _74_749231_png_file_svg_send_message_icon_png_transparent {
+            get {
+                object obj = ResourceManager.GetObject("74-749231_png-file-svg-send-message-icon-png-transparent", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap download {
             get {
                 object obj = ResourceManager.GetObject("download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Message_Free_Icon_fidswo {
+            get {
+                object obj = ResourceManager.GetObject("Message-Free-Icon-fidswo", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
