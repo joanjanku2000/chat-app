@@ -26,12 +26,27 @@ namespace Chat_application_with_windows_forms.Repository.user
 
         private string SET_USER_ONLINE = "update userr set online = 1 where id = @Id";
         private string SET_USER_OFFLINE = "update userr set online = 0 where id = @Id";
+        private string SET_USER_DETAILS = "update userr set namee = @Name , last_name = @Lastname where phone_number = @Phonenumber";
         public UserRepo()
         {
             conn = DatabaseConnection.getInstance();
         }
 
+        public void updateUserInfo(string phonenumber,string firstname, string lastname)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
 
+            sqlCommand.CommandText = SET_USER_DETAILS;
+            sqlCommand.Parameters.AddWithValue("@Name", firstname);
+            sqlCommand.Parameters.AddWithValue("@Lastname", lastname);
+            sqlCommand.Parameters.AddWithValue("@Phonenumber", phonenumber);
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
         public User findUserById(Int64 id)
         {
             SqlCommand sqlCommand = conn.CreateCommand();

@@ -223,11 +223,13 @@ namespace Chat_application_with_windows_forms.Client
         private void button1_Click(object sender, EventArgs e)
         {
             _hubProxy.Invoke("Send", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, message.Text);
+            message.Text = "";
         }
 
         private void MessagesLayout_FormClosing(object sender, FormClosingEventArgs e)
         {
             userRepo.setUserOffline(loggedUser.id);
+            _hubProxy.Invoke("logout", loggedUser.phoneNumber);
             _signalRConnection.Dispose();        
             Console.WriteLine("Exiting app");
             System.Windows.Forms.Application.ExitThread();
@@ -350,17 +352,9 @@ namespace Chat_application_with_windows_forms.Client
             }
 
             selectedUserToMessage = userRepo.findUserById(idOfContact);
-            getMessageDataFromTheDatabase(idOfContact);
-
+            activeChatMessages = messageRepo.findMessagesOfUsers(loggedUser.id, selectedUserToMessage.id);
+            populateChatBox();
         }
-
-        void getMessageDataFromTheDatabase(long contactId)
-        {
-
-        }
-
-      
-       
 
         private ChatPanel createActiveChat(string nameToBeShown,string message, int yLocation,string phonenumber,bool you,bool seen)
         {
@@ -491,7 +485,28 @@ namespace Chat_application_with_windows_forms.Client
             populateChatsFromDatabase();
         }
 
- 
+        private void update_info_Click(object sender, EventArgs e)
+        {
+            EditInfo editInfoForm = new EditInfo(loggedUser);
+            editInfoForm.ShowDialog();
+            loggedUser = userRepo.findUserByPhoneNumber(loggedUser.phoneNumber);
+            name.Text = loggedUser.name;
+            last_name.Text = loggedUser.lastName;
+            phone_number.Text = loggedUser.phoneNumber;
+
+            // duhet nje metode ne hub qe updateon
+
+            _hubProxy.Invoke("rePopulateChatBoxes");
+        }
+
+        private void message_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                _hubProxy.Invoke("Send", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, message.Text);
+                message.Text = "";
+            }
+        }
     }
 
     

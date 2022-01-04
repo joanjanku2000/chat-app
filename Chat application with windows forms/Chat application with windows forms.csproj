@@ -200,6 +200,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>chat_applicatinDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Client\EditInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Client\EditInfo.Designer.cs">
+      <DependentUpon>EditInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="Client\MessagesLayout.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -243,6 +249,9 @@
     <Compile Include="Utils\CustomPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <EmbeddedResource Include="Client\EditInfo.resx">
+      <DependentUpon>EditInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Client\MessagesLayout.resx">
       <DependentUpon>MessagesLayout.cs</DependentUpon>
     </EmbeddedResource>
@@ -263,6 +272,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="chat_applicatinDataSet.xsc">
       <DependentUpon>chat_applicatinDataSet.xsd</DependentUpon>
@@ -290,6 +300,8 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Icons\28725582-7cba90da-7383-11e7-9a78-a5356c305a6e.png" />
+    <None Include="Resources\download.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
