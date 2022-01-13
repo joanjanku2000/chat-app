@@ -66,17 +66,41 @@ namespace Chat_application_with_windows_forms.Client
             {
                 if (loggedUser.phoneNumber.Trim().Equals(mes.sender.phoneNumber.Trim()))
                 {
-                    createActiveChat(mes.receiver.fullname(), mes.message, y, mes.receiver.phoneNumber, true,mes.seen);
+                    if (isAContact(mes.receiver.phoneNumber))
+                    {
+                        createActiveChat(mes.receiver.fullname(), mes.message, y, mes.receiver.phoneNumber, true, mes.seen);
+
+                    } else
+                    {
+                        createActiveChat(mes.receiver.phoneNumber, mes.message, y, mes.receiver.phoneNumber, true, mes.seen);
+                    }
                 }
                 else
                 {
-                    createActiveChat(mes.sender.fullname(), mes.message, y, mes.sender.phoneNumber, false,mes.seen);
+                    if (isAContact(mes.receiver.phoneNumber))
+                    {
+                        createActiveChat(mes.sender.fullname(), mes.message, y, mes.sender.phoneNumber, false, mes.seen);
+                    } else
+                    {
+                        createActiveChat(mes.sender.phoneNumber, mes.message, y, mes.sender.phoneNumber, false, mes.seen);
+                    }
                 }
                 y += 43;
             }
 
             chatPanelPopulation();
 
+        }
+
+        private void registerAsAContact(Int64 contactId)
+        {
+          if (contactsRepo.RegisterContact(loggedUser.id, contactId))
+            {
+                MessageB.INFORMATION("Kontakti u regjistrua me sukses", "Sukses");
+            } else
+            {
+                MessageB.WARNING("Kontakti ekziston ose ndodhi nje gabim tjeter", "Warning");
+            }
         }
         private async Task ConnectAsync()
         {
@@ -135,11 +159,17 @@ namespace Chat_application_with_windows_forms.Client
                 ChatPanel addedChat;
                  if (loggedUser.phoneNumber.Equals(sender))
                 {
-                    addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver,true,false);
+                    if (isAContact(receiverUser.phoneNumber.Trim()))
+                        addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver,true,false);
+                    else
+                        addedChat = createActiveChat(receiverUser.phoneNumber, message, y, receiver, true, false);
                 }
                 else
                 {
-                    addedChat = createActiveChat(senderUser.fullname(), message, y, sender,false,false);
+                    if (isAContact(receiverUser.phoneNumber.Trim()))
+                        addedChat = createActiveChat(senderUser.fullname(), message, y, sender,false,false);
+                    else
+                        addedChat = createActiveChat(senderUser.phoneNumber, message, y, sender, false, false);
                 }
                 y += 38; 
                 Console.WriteLine("Chats length {0}", chats.Count);
@@ -303,7 +333,7 @@ namespace Chat_application_with_windows_forms.Client
      
         private void populateContactBoxWithContacts()
         {
-            populateContactsList();
+             populateContactsList();
 
             Console.WriteLine("Found {0} contacts", contacts.Count);
            
@@ -333,7 +363,7 @@ namespace Chat_application_with_windows_forms.Client
             }
 
         }
-        private void populateContactsList()
+        private  void populateContactsList()
         {
             if (contacts == null)
             {
@@ -366,6 +396,22 @@ namespace Chat_application_with_windows_forms.Client
 
         }
 
+        private Boolean isAContact(string phonenumber)
+        {
+            if (contacts != null)
+            {
+                
+                foreach (User u in contacts)
+                {
+                    if (u.phoneNumber.Trim().Equals(phonenumber))
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
         private void new_conversation_Click(object sender, EventArgs e)
         {
             SelectedListViewItemCollection selectedITem = listView1.SelectedItems;
@@ -408,7 +454,7 @@ namespace Chat_application_with_windows_forms.Client
                 messageL.Text = message;
             }
 
-            messageL.Location = new Point(1, nameL.Height + 2);
+            messageL.Location = new Point(1, nameL.Height + 3);
             messageL.Font = new Font("Times New Roman", 11, FontStyle.Italic);
             
            
