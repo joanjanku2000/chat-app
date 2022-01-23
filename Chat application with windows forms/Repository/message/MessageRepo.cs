@@ -18,21 +18,45 @@ namespace Chat_application_with_windows_forms.Entities
         private static string ADD_MESSAGE
             = "insert into user_message(sender_id,receiver_id,message,received,seen)  output INSERTED.ID " +
             "values (@Senderid, @Receiverid, @Message,0,0)";
+
         private static string FIND_MESSAGES_OF_USERS =
             "select * from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) or (sender_id = @Receiverid and receiver_id = @Senderid) order by id";
+       
         private static string FIND_CHATS_OF_USER = "select distinct(receiver_id) as receiver " +
             "from dbo.user_message " +
-            "where sender_id = @Senderid group by receiver_id;";
+            "where sender_id = @Senderid  group by receiver_id;";
+        
         private static string FIND_MESSAGE_BY_ID = "select * from user_message where id = @Id";
         private static string SEE_MESSAGE = "update user_message set seen = 1 where id = (select Max(id) from user_message where sender_id = @Senderid and receiver_id=@Receiverid )";
 
         private static string SEE_MESSAGE_BY_ID = "update user_message set seen = 1 where id = @Id";
+
+        private static string DELETE_MESSAGES_OF_USER =
+          "delete from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) " +
+            "or (sender_id = @Receiverid and receiver_id = @Senderid) ";
 
         public MessageRepo ()
         {
             conn = DatabaseConnection.getInstance();
             userRepo = new UserRepo();
         }
+        public void delete(long senderId,long receiverId)
+        {
+
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            sqlCommand.CommandText = DELETE_MESSAGES_OF_USER;
+            sqlCommand.Parameters.AddWithValue("@Senderid", senderId);
+            sqlCommand.Parameters.AddWithValue("@Receiverid", receiverId);
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
         public Message findById(Int64 id)
         {
 

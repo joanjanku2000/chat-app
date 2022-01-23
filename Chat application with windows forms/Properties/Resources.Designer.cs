@@ -93,6 +93,16 @@ namespace Chat_application_with_windows_forms.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap icon_delete_16 {
+            get {
+                object obj = ResourceManager.GetObject("icon-delete-16", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Message_Free_Icon_fidswo {
             get {
                 object obj = ResourceManager.GetObject("Message-Free-Icon-fidswo", resourceCulture);

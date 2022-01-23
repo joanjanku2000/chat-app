@@ -1,6 +1,5 @@
 ﻿using Chat_application_with_windows_forms.Entities;
 using Microsoft.AspNet.SignalR.Client;
-using Microsoft.Owin.Hosting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +17,7 @@ using Chat_application_with_windows_forms.Exceptions;
 using Chat_application_with_windows_forms.Repository.contacts;
 using static System.Windows.Forms.ListView;
 using Chat_application_with_windows_forms.Utils;
-using System.Threading;
+using MessageBox = System.Windows.Forms.MessageBox;
 
 namespace Chat_application_with_windows_forms.Client
 {
@@ -35,12 +34,13 @@ namespace Chat_application_with_windows_forms.Client
         private List<User> contacts;
         private Dictionary<ListViewItem, Int64> contactListItem = new Dictionary<ListViewItem, long>();
         private List<ChatPanel> chats = new List<ChatPanel>();
-     
+
         private User selectedUserToMessage; //this field will shift pretty often
 
         private List<Entities.Message> userChatsFromDatabase = new List<Entities.Message>();
         private List<Entities.Message> activeChatMessages = new List<Entities.Message>(); //this field will shift pretty often
-        
+
+
         public MessagesLayout(User loggedUser)
         {
             InitializeComponent();
@@ -52,9 +52,9 @@ namespace Chat_application_with_windows_forms.Client
             userRepo = new UserRepo();
             messageRepo = new MessageRepo();
             userChatsFromDatabase = messageRepo.findChatsOfUser(loggedUser.id);
-         
-          //  populateContactBoxWithContacts();
-           
+
+            //  populateContactBoxWithContacts();
+
             ConnectAsync();
 
             userRepo.setUserOnline(loggedUser.id);
@@ -66,24 +66,13 @@ namespace Chat_application_with_windows_forms.Client
             {
                 if (loggedUser.phoneNumber.Trim().Equals(mes.sender.phoneNumber.Trim()))
                 {
-                    if (isAContact(mes.receiver.phoneNumber))
-                    {
-                        createActiveChat(mes.receiver.fullname(), mes.message, y, mes.receiver.phoneNumber, true, mes.seen);
+                    createActiveChat(mes.receiver.fullname(), mes.message, y, mes.receiver.phoneNumber, true, mes.seen);
 
-                    } else
-                    {
-                        createActiveChat(mes.receiver.phoneNumber, mes.message, y, mes.receiver.phoneNumber, true, mes.seen);
-                    }
                 }
                 else
                 {
-                    if (isAContact(mes.receiver.phoneNumber))
-                    {
-                        createActiveChat(mes.sender.fullname(), mes.message, y, mes.sender.phoneNumber, false, mes.seen);
-                    } else
-                    {
-                        createActiveChat(mes.sender.phoneNumber, mes.message, y, mes.sender.phoneNumber, false, mes.seen);
-                    }
+                    createActiveChat(mes.sender.fullname(), mes.message, y, mes.sender.phoneNumber, false, mes.seen);
+
                 }
                 y += 43;
             }
@@ -94,41 +83,44 @@ namespace Chat_application_with_windows_forms.Client
 
         private void registerAsAContact(Int64 contactId)
         {
-          if (contactsRepo.RegisterContact(loggedUser.id, contactId))
+            if (contactsRepo.RegisterContact(loggedUser.id, contactId))
             {
                 MessageB.INFORMATION("Kontakti u regjistrua me sukses", "Sukses");
-            } else
+            }
+            else
             {
                 MessageB.WARNING("Kontakti ekziston ose ndodhi nje gabim tjeter", "Warning");
             }
         }
         private async Task ConnectAsync()
         {
-            
+
             Console.WriteLine("Starting signalRConnection on link");
             _signalRConnection = new HubConnection("http://localhost:8080/signalr");
             Console.WriteLine("Initialized hub connection");
             _hubProxy = _signalRConnection.CreateHubProxy("ChatHub");
             Console.WriteLine("Creating proxy");
-            
-            _hubProxy.On<string, string,string>("AddMessage", (name,reciver, message) => AddMessage(name,reciver,message) );
-            
+
+            _hubProxy.On<string, string, string>("AddMessage", (name, reciver, message) => AddMessage(name, reciver, message));
+
             _hubProxy.On("populateContactBoxWithContacts", () => this.Invoke(new Action(() => populateContactBoxWithContacts())));
 
             _hubProxy.On("ShowUserLoggedInError", () => ShowUserLoggedInError());
 
             Console.WriteLine("MEthod mapping done");
-            
+
             try
             {
                 await _signalRConnection.Start();
-                Console.WriteLine("Started succesfully signalRConnection for user {0}",loggedUser.fullname());
-            } catch (Exception e)
+                Console.WriteLine("Started succesfully signalRConnection for user {0}", loggedUser.fullname());
+            }
+            catch (Exception e)
             {
                 Console.WriteLine("Not started");
                 Console.WriteLine(e.Message);
             }
-           await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber);
+
+            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber);
 
             Console.WriteLine("Connection established");
         }
@@ -136,17 +128,36 @@ namespace Chat_application_with_windows_forms.Client
         public void ShowUserLoggedInError()
         {
             MessageB.ERROR("Je i loguar", "Ju jeni te loguar");
-           try
+            try
             {
                 _signalRConnection.Dispose();
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 Console.WriteLine("Server is probably down");
             }
             Console.WriteLine("Exiting app");
-            System.Windows.Forms.Application.ExitThread();
-            this.Close();
-            this.Dispose();
+            try
+            {
+                System.Windows.Forms.Application.ExitThread();
+
+            }
+            catch (Exception)
+            {
+
+                Console.WriteLine("Server is probably down");
+            }
+            try
+            {
+                this.Close();
+                this.Dispose();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Server is probably down");
+            }
+
+
         }
 
         int y = 2;
@@ -157,21 +168,18 @@ namespace Chat_application_with_windows_forms.Client
                 User senderUser = userRepo.findUserByPhoneNumber(sender);
                 User receiverUser = userRepo.findUserByPhoneNumber(receiver);
                 ChatPanel addedChat;
-                 if (loggedUser.phoneNumber.Equals(sender))
+                if (loggedUser.phoneNumber.Equals(sender))
                 {
-                    if (isAContact(receiverUser.phoneNumber.Trim()))
-                        addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver,true,false);
-                    else
-                        addedChat = createActiveChat(receiverUser.phoneNumber, message, y, receiver, true, false);
+
+                    addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver, true, false);
+
                 }
                 else
                 {
-                    if (isAContact(receiverUser.phoneNumber.Trim()))
-                        addedChat = createActiveChat(senderUser.fullname(), message, y, sender,false,false);
-                    else
-                        addedChat = createActiveChat(senderUser.phoneNumber, message, y, sender, false, false);
+                    addedChat = createActiveChat(senderUser.fullname(), message, y, sender, false, false);
+
                 }
-                y += 38; 
+                y += 38;
                 Console.WriteLine("Chats length {0}", chats.Count);
 
                 chatPanelPopulation();
@@ -184,36 +192,24 @@ namespace Chat_application_with_windows_forms.Client
                     }
                     else
                     {
-                        string username = null;
-                        foreach (User u in contacts)
-                        {
-                            if (u.phoneNumber.Trim() == sender.Trim())
-                            {
-                                username = u.fullname().Trim();
-                            }
-                        }
-                        if (username != null)
-                        {
-                            AppendTextBox(username.Trim() + ":  " + message.Trim());
-                        }
-                            
-                        else
-                        {
-                            AppendTextBox(sender.Trim() + ":  " + message.Trim());
-                        }
+                        User u = userRepo.findUserByPhoneNumber(sender.Trim());
+
+                        AppendTextBox(u.fullname().Trim() + ":  " + message.Trim());
+
                     }
                 }
-               
 
-                if (loggedUser.phoneNumber.Trim().Equals(senderUser.phoneNumber.Trim())) {
+
+                if (loggedUser.phoneNumber.Trim().Equals(senderUser.phoneNumber.Trim()))
+                {
                     Entities.Message toBeSaved = messageRepo.sendMessage(senderUser, receiverUser, message);
-                  
+
                 }
 
                 if (loggedUser.phoneNumber.Trim().Equals(receiverUser.phoneNumber.Trim()) && selectedUserToMessage != null && selectedUserToMessage.id.Equals(senderUser.id))
                 {
                     Console.WriteLine("Seeing message since selected user is the sender");
-                    messageRepo.seeMessage(senderUser.id,receiverUser.id);
+                    messageRepo.seeMessage(senderUser.id, receiverUser.id);
                     addedChat.Invoke(
                            new Action(() =>
                            {
@@ -221,13 +217,13 @@ namespace Chat_application_with_windows_forms.Client
                                addedChat.BackColor = Color.AliceBlue;
                            }));
                 }
-               
+
 
 
 
                 Console.WriteLine("Successfully wrote the message to the database");
 
-             
+
             }
             catch (NotFoundException)
             {
@@ -246,29 +242,16 @@ namespace Chat_application_with_windows_forms.Client
                 }
                 else
                 {
-                    string username = null;
-                    foreach (User u in contacts)
-                    {
-                        if (u.phoneNumber.Trim() == m.sender.phoneNumber.Trim())
-                        {
-                            username = u.fullname().Trim();
-                        }
-                    }
-                    if (username != null)
-                    {
-                        AppendTextBox(username.Trim() + ":  " + m.message.Trim());
-                    } else
-                    {
-                        AppendTextBox(m.sender.phoneNumber.Trim() + ":  " + m.message);
-                    }
-                   
+
+                    AppendTextBox(m.sender.fullname().Trim() + ":  " + m.message.Trim());
+
                 }
             }
         }
         private void chatPanelPopulation()
         {
             chat_panel.Invoke(new Action(() => chat_panel.Controls.Clear()));
-            foreach(ChatPanel chat  in chats)
+            foreach (ChatPanel chat in chats)
             {
                 chat_panel.Invoke(new Action(() => chat_panel.Controls.Add(chat)));
             }
@@ -280,10 +263,10 @@ namespace Chat_application_with_windows_forms.Client
                 this.Invoke(new Action<string>(AppendTextBox), new object[] { value });
                 return;
             }
-           
+
             textBox1.Text += value;
             textBox1.AppendText(Environment.NewLine);
-           
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -295,8 +278,15 @@ namespace Chat_application_with_windows_forms.Client
         private void MessagesLayout_FormClosing(object sender, FormClosingEventArgs e)
         {
             userRepo.setUserOffline(loggedUser.id);
-            _hubProxy.Invoke("logout", loggedUser.phoneNumber);
-            _signalRConnection.Dispose();        
+            try
+            {
+                _hubProxy.Invoke("logout", loggedUser.phoneNumber);
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Hidhet zakonisht kur useri tenton te logohet 2 here");
+            }
+            _signalRConnection.Dispose();
             Console.WriteLine("Exiting app");
             System.Windows.Forms.Application.ExitThread();
         }
@@ -317,7 +307,7 @@ namespace Chat_application_with_windows_forms.Client
             {
                 User foundUser = userRepo.findUserByPhoneNumber(phoneNumberToAdd);
                 Console.WriteLine("Found user to add to contacts {0} " +
-                    ", logged user id {1}", foundUser.id,loggedUser.id);
+                    ", logged user id {1}", foundUser.id, loggedUser.id);
                 Console.WriteLine("Now executing the insert query");
                 contactsRepo.RegisterContact(loggedUser.id, foundUser.id);
                 populateContactBoxWithContacts();
@@ -328,23 +318,23 @@ namespace Chat_application_with_windows_forms.Client
                 MessageB.ERROR("Not found", "User with this phone number cannot be found in our database");
                 return null;
             }
-           
+
         }
-     
+
         private void populateContactBoxWithContacts()
         {
-             populateContactsList();
+            populateContactsList();
 
             Console.WriteLine("Found {0} contacts", contacts.Count);
-           
+
             if (listView1.Items.Count != 0)
             {
                 listView1.Items.Clear();
             }
-         
+
             foreach (User c in contacts)
             {
-                Console.WriteLine("Adding {0} to list who is active: [{1}]", c.fullname(),c.online);
+                Console.WriteLine("Adding {0} to list who is active: [{1}]", c.fullname(), c.online);
                 ListViewItem listViewItem = new ListViewItem();
                 listViewItem.Text = c.fullname().Trim();
                 listViewItem.EnsureVisible();
@@ -357,13 +347,13 @@ namespace Chat_application_with_windows_forms.Client
                 listViewItem.EnsureVisible();
                 contactListItem.Add(listViewItem, c.id);
 
-               
+
                 Console.WriteLine("Handle created {0}", listView1.IsHandleCreated);
-                listView1.Items.Add(listViewItem);           
+                listView1.Items.Add(listViewItem);
             }
 
         }
-        private  void populateContactsList()
+        private void populateContactsList()
         {
             if (contacts == null)
             {
@@ -373,7 +363,7 @@ namespace Chat_application_with_windows_forms.Client
             {
                 contacts.Clear();
             }
-            
+
             List<long> contactIds = contactsRepo.findContactsOfUser(loggedUser.id);
             Console.WriteLine("Got contact ids");
             foreach (Int64 id in contactIds)
@@ -400,7 +390,7 @@ namespace Chat_application_with_windows_forms.Client
         {
             if (contacts != null)
             {
-                
+
                 foreach (User u in contacts)
                 {
                     if (u.phoneNumber.Trim().Equals(phonenumber))
@@ -409,7 +399,7 @@ namespace Chat_application_with_windows_forms.Client
                     }
                 }
             }
-            
+
             return false;
         }
         private void new_conversation_Click(object sender, EventArgs e)
@@ -424,7 +414,7 @@ namespace Chat_application_with_windows_forms.Client
             Int64 idOfContact = 0;
             foreach (ListViewItem item in selectedITem)
             {
-                contactListItem.TryGetValue(item,out idOfContact);
+                contactListItem.TryGetValue(item, out idOfContact);
             }
 
             if (idOfContact == 0)
@@ -438,26 +428,27 @@ namespace Chat_application_with_windows_forms.Client
             populateChatBox();
         }
 
-        private ChatPanel createActiveChat(string nameToBeShown,string message, int yLocation,string phonenumber,bool you,bool seen)
+        private ChatPanel createActiveChat(string nameToBeShown, string message, int yLocation, string phonenumber, bool you, bool seen)
         {
-          
+
             Label nameL = new Label();
-            nameL.Text = nameToBeShown;
+            nameL.Text = nameToBeShown.Trim();
             nameL.Location = new Point(1, 2);
-            nameL.Font = new Font("Book Antiqua", 12, FontStyle.Bold);
+            nameL.Font = new Font("Book Antiqua", 10, FontStyle.Bold);
             Label messageL = new Label();
             if (you)
             {
-                messageL.Text = "You: " + message;
-            } else
+                messageL.Text = "You: " + message.Trim();
+            }
+            else
             {
-                messageL.Text = message;
+                messageL.Text = message.Trim();
             }
 
             messageL.Location = new Point(1, nameL.Height + 3);
-            messageL.Font = new Font("Times New Roman", 11, FontStyle.Italic);
-            
-           
+            messageL.Font = new Font("Times New Roman", 9, FontStyle.Italic);
+
+
             ChatPanel existingPanel = chatExists(phonenumber);
             if (existingPanel != null)
             {
@@ -484,9 +475,10 @@ namespace Chat_application_with_windows_forms.Client
                 }
 
                 return existingPanel;
-            } else
+            }
+            else
             {
-       
+
                 ChatPanel p = new ChatPanel();
                 p.phoneNumber = phonenumber;
 
@@ -505,16 +497,16 @@ namespace Chat_application_with_windows_forms.Client
                 if (!seen && !you)
                 {
                     p.BackColor = Color.Green;
-                   
+
                 }
 
                 return p;
-            }    
+            }
         }
-       
+
         private ChatPanel chatExists(string phonenumber)
         {
-            foreach(ChatPanel chat in chats)
+            foreach (ChatPanel chat in chats)
             {
                 if (chat.phoneNumber.Trim().Equals(phonenumber.Trim()))
                 {
@@ -561,7 +553,7 @@ namespace Chat_application_with_windows_forms.Client
 
         }
 
-      
+
         private void MessagesLayout_Load(object sender, EventArgs e)
         {
             populateChatsFromDatabase();
@@ -589,7 +581,22 @@ namespace Chat_application_with_windows_forms.Client
                 message.Text = "";
             }
         }
-    }
 
-    
+        private void deleteChat_Button_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult =
+                MessageBox.Show("Jeni i sigurt qe doni ta fshini biseden me kete person ?", "Delete", MessageBoxButtons.YesNo);
+            if (dialogResult.Equals(DialogResult.Yes))
+            {
+                messageRepo.delete(loggedUser.id, selectedUserToMessage.id);
+                userChatsFromDatabase = messageRepo.findChatsOfUser(loggedUser.id);
+                chats = new List<ChatPanel>();
+                populateChatsFromDatabase();
+                selectedUserToMessage = null;
+                textBox1.Clear();
+            }
+        }
+
+
+    }
 }

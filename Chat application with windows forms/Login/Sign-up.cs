@@ -64,10 +64,10 @@ namespace Chat_application_with_windows_forms.Login
                 if (loggedUser != null)
                 {
                     this.Hide();
-                  //  Form1 form1 = new Form1(loggedUser);
+               
                     MessagesLayout messageLayout = new MessagesLayout(loggedUser);
                     messageLayout.Show();
-                  //  form1.Show();
+                
                 }
                 
             }

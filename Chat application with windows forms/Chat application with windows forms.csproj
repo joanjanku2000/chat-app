@@ -225,12 +225,6 @@
     <Compile Include="Entities\User.cs" />
     <Compile Include="Exceptions\BadRequestException.cs" />
     <Compile Include="Exceptions\NotFoundException.cs" />
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Login\Sign-up.cs">
       <SubType>Form</SubType>
@@ -254,9 +248,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Client\MessagesLayout.resx">
       <DependentUpon>MessagesLayout.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Login\Sign-up.resx">
       <DependentUpon>Sign-up.cs</DependentUpon>
@@ -304,6 +295,7 @@
     <None Include="Resources\download.png" />
     <None Include="Resources\Message-Free-Icon-fidswo.png" />
     <None Include="Resources\74-749231_png-file-svg-send-message-icon-png-transparent.jpg" />
+    <None Include="Resources\icon-delete-16.png" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

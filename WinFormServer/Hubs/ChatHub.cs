@@ -41,8 +41,9 @@ namespace Chat_application_with_windows_forms.Hubs
         {
             string con = "";
             reversed_users.TryGetValue(phone.Trim(), out con);
-            reversed_users.Remove(phone);
-            users.Remove(con.Trim());
+            Console.WriteLine("Found connection string to logout {0}", con);
+            reversed_users.Remove(phone.Trim());
+            users.Remove(con);
             Console.WriteLine("User {0} is now logged out", phone);
         }
         public void setPhoneNumber(string phone)
@@ -50,13 +51,14 @@ namespace Chat_application_with_windows_forms.Hubs
             string existingCon = null;
 
             reversed_users.TryGetValue(phone.Trim(), out existingCon);
-            users[Context.ConnectionId] = phone;
+            Console.WriteLine("Trying to login a user , found connectio id is {0}", existingCon);
+            users[Context.ConnectionId] = phone.Trim();
             ClientConnected?.Invoke(Context.ConnectionId);
 
             Console.WriteLine("HUB: Setting phone number {0}", phone);
             try
             {
-                reversed_users.Add(phone, Context.ConnectionId);
+                reversed_users.Add(phone.Trim(), Context.ConnectionId);
 
             } catch (Exception)
             {
@@ -114,6 +116,11 @@ namespace Chat_application_with_windows_forms.Hubs
                 Clients.Client(senderConId).AddMessage(sender, receiver, message);
             }
             
+        }
+
+        public void rePopulateChatBoxes()
+        {
+            Clients.All.populateContactBoxWithContacts();
         }
     }
 }
