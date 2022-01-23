@@ -335,7 +335,7 @@ namespace Chat_application_with_windows_forms.Client
             foreach (User c in contacts)
             {
                 Console.WriteLine("Adding {0} to list who is active: [{1}]", c.fullname(), c.online);
-                ListViewItem listViewItem = new ListViewItem();
+                ListViewItem listViewItem = new ContactListViewItem(c);
                 listViewItem.Text = c.fullname().Trim();
                 listViewItem.EnsureVisible();
                 if (c.online)
@@ -597,6 +597,34 @@ namespace Chat_application_with_windows_forms.Client
             }
         }
 
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
 
+        }
+
+        private void listView1_DoubleClick(object sender, EventArgs e)
+        {
+            ContactListViewItem selected = (ContactListViewItem)listView1.SelectedItems[0];
+            ContactInfoForm c = new ContactInfoForm(selected.user);
+            c.ShowDialog();
+        }
+
+        private void addContact_Button_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult =
+                MessageBox.Show("Jeni i sigurt qe doni ta shtoni personin ne listen tuaj te kontakteve ?", "Shto kontakt", MessageBoxButtons.YesNo);
+            if (dialogResult.Equals(DialogResult.Yes))
+            {
+                if (!isAContact(selectedUserToMessage.phoneNumber))
+                {
+                    contactsRepo.RegisterContact(loggedUser.id, selectedUserToMessage.id);
+                    populateContactBoxWithContacts();
+                } else
+                {
+                    MessageB.WARNING("Ky person eshte ne listen tuaj te kontakteve","Kontakti ekziston");
+                }
+               
+            }
+        }
     }
 }

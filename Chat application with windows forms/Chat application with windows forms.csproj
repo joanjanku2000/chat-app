@@ -240,8 +240,15 @@
     <Compile Include="Security\PasswordHash.cs" />
     <Compile Include="Server\Server.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\ContactListViewItem.cs" />
     <Compile Include="Utils\CustomPanel.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Utils\Form1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Utils\Form1.Designer.cs">
+      <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Client\EditInfo.resx">
       <DependentUpon>EditInfo.cs</DependentUpon>
@@ -265,6 +272,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="Utils\Form1.resx">
+      <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="chat_applicatinDataSet.xsc">
       <DependentUpon>chat_applicatinDataSet.xsd</DependentUpon>
     </None>
