@@ -1,9 +1,10 @@
 ﻿CREATE PROCEDURE [dbo].[GROUPS_OF_USER] @Userid bigint AS
 BEGIN
-		select * from groupp 
+		select distinct * from groupp 
 		inner join user_group on user_group.group_id = groupp.id 
 		where admin_id = @Userid or user_group.user_id = @Userid
 END;
+GO
 
 CREATE PROCEDURE [dbo].[MESSAGES_OF_GROUP] @Groupid bigint AS
 BEGIN
