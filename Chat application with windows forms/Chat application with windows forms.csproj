@@ -212,6 +212,8 @@
     <Compile Include="Client\MessagesLayout.Designer.cs">
       <DependentUpon>MessagesLayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\Group.cs" />
+    <Compile Include="Entities\GroupMessage.cs" />
     <Compile Include="Entities\Message.cs" />
     <Compile Include="Entities\MessageResult.cs" />
     <Compile Include="MessageBoxes\Form1.cs">
@@ -221,6 +223,7 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Repository\contacts\ContactsRepo.cs" />
+    <Compile Include="Repository\group\GroupRepository.cs" />
     <Compile Include="Repository\message\MessageRepo.cs" />
     <Compile Include="Entities\User.cs" />
     <Compile Include="Exceptions\BadRequestException.cs" />
@@ -306,6 +309,7 @@
     <None Include="Resources\Message-Free-Icon-fidswo.png" />
     <None Include="Resources\74-749231_png-file-svg-send-message-icon-png-transparent.jpg" />
     <None Include="Resources\icon-delete-16.png" />
+    <Content Include="Procedures\Stored Procedures.txt" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />
