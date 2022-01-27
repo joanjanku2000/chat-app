@@ -18,6 +18,7 @@ using Chat_application_with_windows_forms.Repository.contacts;
 using static System.Windows.Forms.ListView;
 using Chat_application_with_windows_forms.Utils;
 using MessageBox = System.Windows.Forms.MessageBox;
+using Chat_application_with_windows_forms.Repository.group;
 
 namespace Chat_application_with_windows_forms.Client
 {
@@ -40,6 +41,8 @@ namespace Chat_application_with_windows_forms.Client
         private List<Entities.Message> userChatsFromDatabase = new List<Entities.Message>();
         private List<Entities.Message> activeChatMessages = new List<Entities.Message>(); //this field will shift pretty often
 
+        private GroupRepository groupRepository;
+        private List<Group> groupsOfUser;
 
         public MessagesLayout(User loggedUser)
         {
@@ -52,12 +55,16 @@ namespace Chat_application_with_windows_forms.Client
             userRepo = new UserRepo();
             messageRepo = new MessageRepo();
             userChatsFromDatabase = messageRepo.findChatsOfUser(loggedUser.id);
-
+            groupRepository = new GroupRepository();
+            groupsOfUser = new List<Group>();
             //  populateContactBoxWithContacts();
 
             ConnectAsync();
 
             userRepo.setUserOnline(loggedUser.id);
+
+            getGroupsOfUser();
+            populateGroupsList();
         }
         private void populateChatsFromDatabase()
         {
@@ -625,6 +632,71 @@ namespace Chat_application_with_windows_forms.Client
                 }
                
             }
+        }
+
+        private void getGroupsOfUser()
+        {
+            groupsOfUser = groupRepository.getGroupsOfUser(loggedUser);
+        }
+
+        private void createGroup(long adminid, string group_name)
+        {
+            groupRepository.createGroup(adminid, group_name);
+
+            getGroupsOfUser();
+        }
+
+        private void addUsersToGroup(long groupId, List<long> userIds)
+        {
+            userIds.ForEach(id => groupRepository.addUserToGroup(groupId, id));
+            getGroupsOfUser();
+        }
+
+        private void addMessageToGroup(long groupid, string message)
+        {
+            groupRepository.addMessageToGroup(groupid, loggedUser.id, message);
+
+        }
+
+        private void populateGroupsList()
+        {
+            if (groupsListView.Items.Count > 0)
+            {
+                groupsListView.Items.Clear();
+            }
+            Console.WriteLine("Got {0} groups", groupsOfUser.Count);
+            groupsOfUser.ForEach(
+                group =>
+                {
+                    groupsListView.Items.Add(new GroupListViewItem(group));
+                });   
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            GroupForm groupForm = new GroupForm(groupRepository, loggedUser.id);
+            groupForm.ShowDialog();
+
+            getGroupsOfUser();
+            populateGroupsList();
+        }
+
+        private void viewGroup_button_Click(object sender, EventArgs e)
+        {
+            GroupListViewItem selected = (GroupListViewItem)groupsListView.SelectedItems[0];
+           
+            if (selected != null)
+            {
+                GroupInfoForm form = new GroupInfoForm(selected.group, groupRepository, contacts, loggedUser);
+                form.ShowDialog();
+
+                // Ne rast se groupi eshte fshire
+                getGroupsOfUser();
+                populateGroupsList();
+            }
+            
+
+
         }
     }
 }

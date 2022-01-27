@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Chat_application_with_windows_forms.Repository.group
 {
-    class GroupRepository
+    public class GroupRepository
     {
         private SqlConnection conn;
         private UserRepo userRepo;
@@ -21,12 +21,15 @@ namespace Chat_application_with_windows_forms.Repository.group
         private static string MESSAGES_OF_GROUP_PROCEDURE = "MESSAGES_OF_GROUP";
         private static string ADD_MESSAGE_TO_GROUP = "insert into group_message(sender_id,group_id,message) values " +
             "(@Senderid,@Groupid,@Message)";
+      
         private static string DELETE_USER_FROM_GROUP = "delete from user_group where group_id = @Groupid and user_id = @Userid";
-        private static string DELETE_GROUP = "delete from group where id = @Id";
-        private static string DELETE_MESSAGES_OF_GROUP = "delete from group_message where group_id = @Id";
-        private static string DELETE_GROUP_PARTICIPANTS = "delete from user_group where group_id = @Id";
-        private static string MODIFY_GROUP_NAME = "update groupp set name = @Name where id = @Id";
-        private static string GET_GROUP_BY_ID = "select * from groupp where id = @Id";
+        private static string DELETE_GROUP = "delete from groupp where id = @Groupid";
+        private static string DELETE_MESSAGES_OF_GROUP = "delete from group_message where group_id = @Groupid";
+        private static string DELETE_GROUP_PARTICIPANTS = "delete from user_group where group_id = @Groupid";
+     
+        private static string MODIFY_GROUP_NAME = "update groupp set name = @Name where id = @Groupid";
+       
+        private static string GET_GROUP_BY_ID = "select * from groupp where id = @Groupid";
         public GroupRepository()
         {
             conn = DatabaseConnection.getInstance();
@@ -102,6 +105,8 @@ namespace Chat_application_with_windows_forms.Repository.group
          * */
         public List<Group> getGroupsOfUser(User user)
         {
+
+            Console.WriteLine("Getting groups of user {0}", user.id);
             SqlCommand sqlCommand = conn.CreateCommand();
             if (conn.State == System.Data.ConnectionState.Closed)
                 conn.Open();
@@ -137,13 +142,14 @@ namespace Chat_application_with_windows_forms.Repository.group
                 entry.objectToMap.messages = getGroupMessages(entry.objectToMap.id);
                 groupsToReturn.Add(entry.objectToMap);
             }
-
+            Console.WriteLine("Total groups user has is {0}", groupsToReturn.Count);
             return groupsToReturn;
             
         }
 
         public List<GroupMessage> getGroupMessages(long groupid)
         {
+           
             SqlCommand sqlCommand = conn.CreateCommand();
             if (conn.State == System.Data.ConnectionState.Closed)
                 conn.Open();
@@ -182,7 +188,115 @@ namespace Chat_application_with_windows_forms.Repository.group
         }
 
 
+        public void addMessageToGroup(long groupid, long userid,string message)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
 
+            sqlCommand.CommandText = ADD_MESSAGE_TO_GROUP;
+            sqlCommand.Parameters.AddWithValue("@Senderid", groupid);
+            sqlCommand.Parameters.AddWithValue("@Groupid", userid);
+            sqlCommand.Parameters.AddWithValue("@Message", message);
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
+        public void deleteUserFromGroup(long groupid,long userid)
+        {
+            
+            SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = DELETE_USER_FROM_GROUP;
+            sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
+            sqlCommand.Parameters.AddWithValue("@Userid", userid);
+   
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
+        public void modifyGroupName(long groupid, string name)
+        {
+            
+
+           SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = MODIFY_GROUP_NAME;
+            sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
+            sqlCommand.Parameters.AddWithValue("@Name", name);
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
+        public Group getGroupById(long groupid, User user)
+        {
+
+            List<Group> groupsOfUser = getGroupsOfUser(user);
+
+            return groupsOfUser.Find(g => g.id == groupid);
+        }
+
+        public void deleteGroup(long groupid)
+        {
+            /**
+             * Fillmisht fshihen mesazhet dhe pjesemarresit e grupit
+             * per te shmanguar gabimet me foreign key, qe nuk lejohet 
+             * te fshihet sepse grupi ekziston diku jeter
+             * */
+
+            deleteMessagesFromGroup(groupid);
+            deleteUsersFromGroup(groupid);
+
+            SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = DELETE_GROUP;
+            sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
+
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
+        private void deleteMessagesFromGroup(long groupid)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = DELETE_MESSAGES_OF_GROUP;
+            sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
+         
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
+        private void deleteUsersFromGroup(long groupid)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = DELETE_GROUP_PARTICIPANTS;
+            sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
+
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
         private static Group constructGroup(long id, string groupName)
         {
             Group group = new Group();

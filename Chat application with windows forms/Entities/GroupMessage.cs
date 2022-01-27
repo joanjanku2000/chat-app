@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chat_application_with_windows_forms.Entities
 {
-    class GroupMessage
+   public class GroupMessage
     {
         public long id;
         public string message;
