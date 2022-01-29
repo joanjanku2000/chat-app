@@ -17,11 +17,15 @@ namespace Chat_application_with_windows_forms.Client
 
         private GroupRepository repo;
         private long id;
-        public GroupForm(GroupRepository repo, long adminid)
+        private Boolean update;
+        private Int64 groupId;
+        public GroupForm(GroupRepository repo, long adminid,Boolean update, Int64 groupid)
         {
             InitializeComponent();
             this.repo = repo;
             this.id = adminid;
+            this.update = update;
+            this.groupId = groupid;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -34,8 +38,10 @@ namespace Chat_application_with_windows_forms.Client
                 return;
             }
 
-            repo.createGroup(id, name);
-
+            if (!update)
+                repo.createGroup(id, name);
+            else
+                repo.modifyGroupName(groupId, name);
            
             this.Close();
             this.Dispose();

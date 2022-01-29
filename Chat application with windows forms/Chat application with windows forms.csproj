@@ -234,7 +234,6 @@
     <Compile Include="Entities\User.cs" />
     <Compile Include="Exceptions\BadRequestException.cs" />
     <Compile Include="Exceptions\NotFoundException.cs" />
-    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Login\Sign-up.cs">
       <SubType>Form</SubType>
     </Compile>

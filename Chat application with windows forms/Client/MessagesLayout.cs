@@ -114,6 +114,10 @@ namespace Chat_application_with_windows_forms.Client
 
             _hubProxy.On("ShowUserLoggedInError", () => ShowUserLoggedInError());
 
+            _hubProxy.On("getGroupsOfUser", () => getGroupsOfUser());
+
+            _hubProxy.On("populateGroupsList", () => populateGroupsList());
+
             Console.WriteLine("MEthod mapping done");
 
             try
@@ -592,7 +596,7 @@ namespace Chat_application_with_windows_forms.Client
         private void deleteChat_Button_Click(object sender, EventArgs e)
         {
             DialogResult dialogResult =
-                MessageBox.Show("Jeni i sigurt qe doni ta fshini biseden me kete person ?", "Delete", MessageBoxButtons.YesNo);
+                MessageBox.Show("Fshirja e bisedes do te fshije edhe biseden nga ana e bashkekomunikuesit. Jeni i sigurt per kete ?", "Delete", MessageBoxButtons.YesNo);
             if (dialogResult.Equals(DialogResult.Yes))
             {
                 messageRepo.delete(loggedUser.id, selectedUserToMessage.id);
@@ -674,7 +678,7 @@ namespace Chat_application_with_windows_forms.Client
 
         private void button2_Click(object sender, EventArgs e)
         {
-            GroupForm groupForm = new GroupForm(groupRepository, loggedUser.id);
+            GroupForm groupForm = new GroupForm(groupRepository, loggedUser.id,false,-1);
             groupForm.ShowDialog();
 
             getGroupsOfUser();
@@ -687,7 +691,7 @@ namespace Chat_application_with_windows_forms.Client
            
             if (selected != null)
             {
-                GroupInfoForm form = new GroupInfoForm(selected.group, groupRepository, contacts, loggedUser);
+                GroupInfoForm form = new GroupInfoForm(selected.group, groupRepository, contacts, loggedUser,_signalRConnection,_hubProxy);
                 form.ShowDialog();
 
                 // Ne rast se groupi eshte fshire

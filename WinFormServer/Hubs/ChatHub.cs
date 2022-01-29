@@ -11,10 +11,13 @@ namespace Chat_application_with_windows_forms.Hubs
     public delegate void ClientConnectionEventHandler(string clientId);
    public class ChatHub : Hub
     {
+        /** <ConnectionId , PhoneNumber> */
         static Dictionary<string, string> users = new Dictionary<string,string>();
+        /** <PhoneNumber , ConnectionId> */
         static Dictionary<string, string> reversed_users = new Dictionary<string, string>();
 
         public static event ClientConnectionEventHandler ClientConnected;
+
         /**
          * Used to refresh the list of contacts in all logged users since another
          * User joined
@@ -26,6 +29,7 @@ namespace Chat_application_with_windows_forms.Hubs
            
             return base.OnConnected();
         }
+
         /**
          * Used to refresh the list of contacts in all logged users since another
          * User left
@@ -121,6 +125,27 @@ namespace Chat_application_with_windows_forms.Hubs
         public void rePopulateChatBoxes()
         {
             Clients.All.populateContactBoxWithContacts();
+        }
+
+        public void rePopulateGroupBoxes(List<string> phonenumbers)
+        {
+            List<string> connectionIds 
+                = getConnectionIdsOfPhoneNumbers(phonenumbers)
+                .Where(phone => phone != null)
+                .ToList();
+
+            Clients.Clients(connectionIds).getGroupsOfUser();
+            Clients.Clients(connectionIds).populateGroupsList();
+        }
+
+        private List<string> getConnectionIdsOfPhoneNumbers(List<string> phonenumbers)
+        {
+            return phonenumbers.Select(phone =>
+            {
+                string con = "";
+                reversed_users.TryGetValue(phone.Trim(), out con);
+                return con;
+            }).ToList();
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿CREATE PROCEDURE [dbo].[GROUPS_OF_USER] @Userid bigint AS
 BEGIN
-		select distinct * from groupp 
-		left join user_group on user_group.group_id = groupp.id 
-		where admin_id = @Userid or user_group.user_id = @Userid
+				select  distinct (groupp.id) , max(groupp.name) , max(groupp.admin_id) , max(user_group.id), max(user_group.group_id) , max(user_group.user_id)   
+				from groupp 
+					left join user_group on user_group.group_id = groupp.id 
+				where (admin_id = @Userid ) or (user_group.user_id = @Userid) 
+					group  by groupp.id ;
 END;
 
 CREATE PROCEDURE [dbo].[MESSAGES_OF_GROUP] @Groupid bigint AS
