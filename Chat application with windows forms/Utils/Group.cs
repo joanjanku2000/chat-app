@@ -34,7 +34,7 @@ namespace Chat_application_with_windows_forms.Utils
             this._hubProxy = proxy;
             this._signalRConnection = con;
 
-         
+            _hubProxy.On<string,string>("AddGroupChat", (sender, message) => this.Invoke(new Action(() => addGroupChat(sender, message))));
 
             InitializeComponent();
             populateListView();
@@ -59,6 +59,7 @@ namespace Chat_application_with_windows_forms.Utils
             button3.Enabled = false;
             button2.Enabled = false;
             button1.Enabled = false;
+            button4.Enabled = false;
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -166,14 +167,19 @@ namespace Chat_application_with_windows_forms.Utils
             List<User> receivers = group.participants;
             receivers.Add(group.admin);
             Console.WriteLine("Client: Found receivers");
-            _hubProxy.Invoke("sendGroupMessage", logged.phoneNumber, receivers, message);
+
+            List<string> receiversPhoneNumber = receivers
+                .Select(r => r.phoneNumber.Trim())
+                .ToList();
+
+            _hubProxy.Invoke("sendGroupMessage", logged.phoneNumber, receiversPhoneNumber, message);
             Console.WriteLine("Client: Invoked remote method");
         }
 
         private void addGroupChat(string senderPhoneNumber, string message)
         {
             Console.WriteLine("Client: Method addGroupChat called by server");
-            if (senderPhoneNumber.Trim().Equals(logged.phoneNumber)){
+            if (senderPhoneNumber.Trim().Equals(logged.phoneNumber.Trim())){
                 chatbox_Box.Text += "You: " + message.Trim();
                 chatbox_Box.AppendText(Environment.NewLine);
             } else
@@ -199,6 +205,19 @@ namespace Chat_application_with_windows_forms.Utils
             {
                 Console.WriteLine("Client: Trying to send message");
                 sendMessage(messageToSend);
+            }
+        }
+
+        private void message_Box_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                string messageToSend = message_Box.Text.Trim();
+                if (messageToSend.Length > 0)
+                {
+                    Console.WriteLine("Client: Trying to send message");
+                    sendMessage(messageToSend);
+                }
             }
         }
     }

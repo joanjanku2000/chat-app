@@ -208,6 +208,7 @@ namespace Chat_application_with_windows_forms.Utils
             this.message_Box.Name = "message_Box";
             this.message_Box.Size = new System.Drawing.Size(388, 43);
             this.message_Box.TabIndex = 3;
+            this.message_Box.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.message_Box_KeyPress);
             // 
             // send_Button
             // 
