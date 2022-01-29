@@ -21,7 +21,7 @@ namespace Chat_application_with_windows_forms.Utils
         private GroupRepository repo;
         private List<User> contacts;
         private User logged;
-
+        
         private HubConnection _signalRConnection;
         private IHubProxy _hubProxy;
 
@@ -34,6 +34,7 @@ namespace Chat_application_with_windows_forms.Utils
             this._hubProxy = proxy;
             this._signalRConnection = con;
 
+         
 
             InitializeComponent();
             populateListView();
@@ -45,6 +46,8 @@ namespace Chat_application_with_windows_forms.Utils
             {
                 makeButtonsNotClickable();
             }
+
+            fillChatBoxWithMessagesFromTheDatabase();
         }
 
         private Boolean userIsAllowedToEditGroup()
@@ -133,6 +136,70 @@ namespace Chat_application_with_windows_forms.Utils
                participants.Select(user => user.phoneNumber.Trim()).ToList();
 
             _hubProxy.Invoke("rePopulateGroupBoxes", phoneNumbersOfParticipantsToUpdate);
+        }
+
+        private void fillChatBoxWithMessagesFromTheDatabase()
+        {
+            List<GroupMessage> groupMessages = repo.getGroupMessages(group.id);
+
+            groupMessages.ForEach(message =>
+            {
+                chatbox_Box.Text += extractMessageFormatForTextBox(message) ;
+                chatbox_Box.AppendText(Environment.NewLine);
+            });
+        }
+
+        private string extractMessageFormatForTextBox(GroupMessage message)
+        {
+            string sender = logged.id == message.sender.id ? "You: " : message.sender.name.Trim();
+
+            string actualMessage = message.message.Trim();
+
+            return sender + actualMessage;
+        }
+
+        private void sendMessage(string message)
+        {
+            Console.WriteLine("Client: Saving the message");
+            repo.addMessageToGroup(group.id, logged.id, message);
+            Console.WriteLine("Client: Saved the message");
+            List<User> receivers = group.participants;
+            receivers.Add(group.admin);
+            Console.WriteLine("Client: Found receivers");
+            _hubProxy.Invoke("sendGroupMessage", logged.phoneNumber, receivers, message);
+            Console.WriteLine("Client: Invoked remote method");
+        }
+
+        private void addGroupChat(string senderPhoneNumber, string message)
+        {
+            Console.WriteLine("Client: Method addGroupChat called by server");
+            if (senderPhoneNumber.Trim().Equals(logged.phoneNumber)){
+                chatbox_Box.Text += "You: " + message.Trim();
+                chatbox_Box.AppendText(Environment.NewLine);
+            } else
+            {
+                //finding the user with this phone
+
+                group.participants.ForEach(p =>
+                {
+                    if (p.phoneNumber == senderPhoneNumber)
+                    {
+                        chatbox_Box.Text += p.fullname().Trim() + ":  " + message.Trim();
+                        chatbox_Box.AppendText(Environment.NewLine);
+                    }
+                });
+            }
+           
+        }
+
+        private void send_Button_Click(object sender, EventArgs e)
+        {
+            string messageToSend = message_Box.Text.Trim();
+            if (messageToSend.Length > 0)
+            {
+                Console.WriteLine("Client: Trying to send message");
+                sendMessage(messageToSend);
+            }
         }
     }
 }

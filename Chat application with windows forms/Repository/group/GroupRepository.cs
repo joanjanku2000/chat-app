@@ -195,8 +195,8 @@ namespace Chat_application_with_windows_forms.Repository.group
                 conn.Open();
 
             sqlCommand.CommandText = ADD_MESSAGE_TO_GROUP;
-            sqlCommand.Parameters.AddWithValue("@Senderid", groupid);
-            sqlCommand.Parameters.AddWithValue("@Groupid", userid);
+            sqlCommand.Parameters.AddWithValue("@Senderid", userid);
+            sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
             sqlCommand.Parameters.AddWithValue("@Message", message);
             sqlCommand.ExecuteNonQuery();
 

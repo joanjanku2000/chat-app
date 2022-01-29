@@ -118,6 +118,8 @@ namespace Chat_application_with_windows_forms.Client
 
             _hubProxy.On("populateGroupsList", () => populateGroupsList());
 
+
+
             Console.WriteLine("MEthod mapping done");
 
             try
