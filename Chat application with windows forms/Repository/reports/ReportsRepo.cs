@@ -17,7 +17,7 @@ namespace Chat_application_with_windows_forms.Repository.reports
 
         private string SENT_MOST_MESSAGES_PROC = "SENT_MOST_MESSAGES";
         private string GROUPS_MOST_INTERACTED_WITH = "GROUPS_MOST_INTERACTED_WITH";
-        private string RECEIVED_MOST_MESSAGES_PROC = "RECEIVED_MOST_MESSAGES";
+        private string RECEIVED_MOST_MESSAGES_PROC = "RECEIVED_MOST_MESSAGES_FROM";
         public ReportsRepo()
         {
             conn = DatabaseConnection.getInstance();
@@ -40,7 +40,7 @@ namespace Chat_application_with_windows_forms.Repository.reports
                 while (reader.Read())
                 {
                     long receiverid = reader.GetInt64(0);
-                    long totalMessagesSent = reader.GetInt64(1);
+                    int totalMessagesSent = reader.GetInt32(1);
 
                     toReturn.Add(receiverid, totalMessagesSent);
                 }
@@ -56,7 +56,7 @@ namespace Chat_application_with_windows_forms.Repository.reports
             conn.Open();
 
             SqlCommand sqlCommand = conn.CreateCommand();
-            sqlCommand.CommandText = RECEIVED_MOST_MESSAGES_PROC\;
+            sqlCommand.CommandText = RECEIVED_MOST_MESSAGES_PROC;
             sqlCommand.CommandType = System.Data.CommandType.StoredProcedure;
             sqlCommand.Parameters.AddWithValue("@Userid", userid);
 
@@ -67,7 +67,7 @@ namespace Chat_application_with_windows_forms.Repository.reports
                 while (reader.Read())
                 {
                     long senderId = reader.GetInt64(0);
-                    long totalMessagesSent = reader.GetInt64(1);
+                    int totalMessagesSent = reader.GetInt32(1);
 
                     toReturn.Add(senderId, totalMessagesSent);
                 }
@@ -94,7 +94,7 @@ namespace Chat_application_with_windows_forms.Repository.reports
                 while (reader.Read())
                 {
                     long groupid = reader.GetInt64(0);
-                    long totalMessagesSent = reader.GetInt64(1);
+                    int totalMessagesSent = reader.GetInt32(1);
 
                     toReturn.Add(groupid, totalMessagesSent);
                 }

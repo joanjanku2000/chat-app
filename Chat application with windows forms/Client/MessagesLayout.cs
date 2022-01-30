@@ -704,5 +704,11 @@ namespace Chat_application_with_windows_forms.Client
 
 
         }
+
+        private void reports_Group_Click(object sender, EventArgs e)
+        {
+            ReportsForm reports = new ReportsForm(groupRepository, loggedUser, userRepo);
+            reports.ShowDialog();
+        }
     }
 }

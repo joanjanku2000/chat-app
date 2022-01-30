@@ -31,9 +31,7 @@ namespace Chat_application_with_windows_forms.Client
         {
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.deleteChat_Button = new Chat_application_with_windows_forms.Utils.ChatButton();
             this.message = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
             this.chats_groupBox = new System.Windows.Forms.GroupBox();
             this.chat_panel = new System.Windows.Forms.Panel();
             this.contacts_groupBox = new System.Windows.Forms.GroupBox();
@@ -43,12 +41,15 @@ namespace Chat_application_with_windows_forms.Client
             this.phone_number = new System.Windows.Forms.Label();
             this.new_contact = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.update_info = new System.Windows.Forms.Button();
-            this.new_conversation = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.viewGroup_button = new System.Windows.Forms.Button();
             this.groupsListView = new System.Windows.Forms.ListView();
             this.button2 = new System.Windows.Forms.Button();
+            this.reports_Group = new System.Windows.Forms.Button();
+            this.new_conversation = new System.Windows.Forms.Button();
+            this.update_info = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.deleteChat_Button = new Chat_application_with_windows_forms.Utils.ChatButton();
             this.groupBox1.SuspendLayout();
             this.chats_groupBox.SuspendLayout();
             this.contacts_groupBox.SuspendLayout();
@@ -83,18 +84,6 @@ namespace Chat_application_with_windows_forms.Client
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Communication Centre";
             // 
-            // deleteChat_Button
-            // 
-            this.deleteChat_Button.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources.icon_delete_16;
-            this.deleteChat_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.deleteChat_Button.Location = new System.Drawing.Point(432, 18);
-            this.deleteChat_Button.Name = "deleteChat_Button";
-            this.deleteChat_Button.phoneNumber = null;
-            this.deleteChat_Button.Size = new System.Drawing.Size(45, 40);
-            this.deleteChat_Button.TabIndex = 6;
-            this.deleteChat_Button.UseVisualStyleBackColor = true;
-            this.deleteChat_Button.Click += new System.EventHandler(this.deleteChat_Button_Click);
-            // 
             // message
             // 
             this.message.BackColor = System.Drawing.SystemColors.ControlLightLight;
@@ -107,20 +96,6 @@ namespace Chat_application_with_windows_forms.Client
             this.message.Size = new System.Drawing.Size(388, 43);
             this.message.TabIndex = 3;
             this.message.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.message_KeyPress);
-            // 
-            // button1
-            // 
-            this.button1.AutoEllipsis = true;
-            this.button1.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources._74_749231_png_file_svg_send_message_icon_png_transparent;
-            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.Location = new System.Drawing.Point(420, 470);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(57, 42);
-            this.button1.TabIndex = 2;
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // chats_groupBox
             // 
@@ -232,33 +207,6 @@ namespace Chat_application_with_windows_forms.Client
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "User Info";
             // 
-            // update_info
-            // 
-            this.update_info.BackColor = System.Drawing.SystemColors.WindowFrame;
-            this.update_info.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources._28725582_7cba90da_7383_11e7_9a78_a5356c305a6e;
-            this.update_info.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.update_info.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-            this.update_info.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.update_info.Location = new System.Drawing.Point(170, 80);
-            this.update_info.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.update_info.Name = "update_info";
-            this.update_info.Size = new System.Drawing.Size(49, 41);
-            this.update_info.TabIndex = 13;
-            this.update_info.UseVisualStyleBackColor = false;
-            this.update_info.Click += new System.EventHandler(this.update_info_Click);
-            // 
-            // new_conversation
-            // 
-            this.new_conversation.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources.Message_Free_Icon_fidswo;
-            this.new_conversation.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.new_conversation.Location = new System.Drawing.Point(187, 171);
-            this.new_conversation.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.new_conversation.Name = "new_conversation";
-            this.new_conversation.Size = new System.Drawing.Size(48, 47);
-            this.new_conversation.TabIndex = 12;
-            this.new_conversation.UseVisualStyleBackColor = true;
-            this.new_conversation.Click += new System.EventHandler(this.new_conversation_Click);
-            // 
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.viewGroup_button);
@@ -274,7 +222,7 @@ namespace Chat_application_with_windows_forms.Client
             // 
             // viewGroup_button
             // 
-            this.viewGroup_button.Location = new System.Drawing.Point(132, 162);
+            this.viewGroup_button.Location = new System.Drawing.Point(132, 170);
             this.viewGroup_button.Name = "viewGroup_button";
             this.viewGroup_button.Size = new System.Drawing.Size(75, 23);
             this.viewGroup_button.TabIndex = 14;
@@ -287,7 +235,7 @@ namespace Chat_application_with_windows_forms.Client
             this.groupsListView.BackColor = System.Drawing.SystemColors.GradientActiveCaption;
             this.groupsListView.Font = new System.Drawing.Font("Book Antiqua", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupsListView.HideSelection = false;
-            this.groupsListView.Location = new System.Drawing.Point(19, 17);
+            this.groupsListView.Location = new System.Drawing.Point(19, 25);
             this.groupsListView.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.groupsListView.Name = "groupsListView";
             this.groupsListView.Size = new System.Drawing.Size(188, 140);
@@ -297,13 +245,82 @@ namespace Chat_application_with_windows_forms.Client
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(24, 477);
+            this.button2.BackColor = System.Drawing.Color.Green;
+            this.button2.Font = new System.Drawing.Font("Book Antiqua", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button2.ForeColor = System.Drawing.Color.FloralWhite;
+            this.button2.Location = new System.Drawing.Point(38, 477);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(93, 23);
+            this.button2.Size = new System.Drawing.Size(138, 31);
             this.button2.TabIndex = 13;
             this.button2.Text = "Create Group";
-            this.button2.UseVisualStyleBackColor = true;
+            this.button2.UseVisualStyleBackColor = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // reports_Group
+            // 
+            this.reports_Group.BackColor = System.Drawing.Color.RoyalBlue;
+            this.reports_Group.Font = new System.Drawing.Font("Bell MT", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.reports_Group.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.reports_Group.Location = new System.Drawing.Point(16, 514);
+            this.reports_Group.Name = "reports_Group";
+            this.reports_Group.Size = new System.Drawing.Size(219, 46);
+            this.reports_Group.TabIndex = 14;
+            this.reports_Group.Text = "Raporte Statistikore";
+            this.reports_Group.UseVisualStyleBackColor = false;
+            this.reports_Group.Click += new System.EventHandler(this.reports_Group_Click);
+            // 
+            // new_conversation
+            // 
+            this.new_conversation.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources.Message_Free_Icon_fidswo;
+            this.new_conversation.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.new_conversation.Location = new System.Drawing.Point(187, 171);
+            this.new_conversation.Margin = new System.Windows.Forms.Padding(2);
+            this.new_conversation.Name = "new_conversation";
+            this.new_conversation.Size = new System.Drawing.Size(48, 47);
+            this.new_conversation.TabIndex = 12;
+            this.new_conversation.UseVisualStyleBackColor = true;
+            this.new_conversation.Click += new System.EventHandler(this.new_conversation_Click);
+            // 
+            // update_info
+            // 
+            this.update_info.BackColor = System.Drawing.SystemColors.WindowFrame;
+            this.update_info.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources._28725582_7cba90da_7383_11e7_9a78_a5356c305a6e;
+            this.update_info.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.update_info.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.update_info.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.update_info.Location = new System.Drawing.Point(170, 80);
+            this.update_info.Margin = new System.Windows.Forms.Padding(2);
+            this.update_info.Name = "update_info";
+            this.update_info.Size = new System.Drawing.Size(49, 41);
+            this.update_info.TabIndex = 13;
+            this.update_info.UseVisualStyleBackColor = false;
+            this.update_info.Click += new System.EventHandler(this.update_info_Click);
+            // 
+            // button1
+            // 
+            this.button1.AutoEllipsis = true;
+            this.button1.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources._74_749231_png_file_svg_send_message_icon_png_transparent;
+            this.button1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.button1.Location = new System.Drawing.Point(420, 470);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(57, 42);
+            this.button1.TabIndex = 2;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // deleteChat_Button
+            // 
+            this.deleteChat_Button.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources.icon_delete_16;
+            this.deleteChat_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.deleteChat_Button.Location = new System.Drawing.Point(432, 13);
+            this.deleteChat_Button.Name = "deleteChat_Button";
+            this.deleteChat_Button.phoneNumber = null;
+            this.deleteChat_Button.Size = new System.Drawing.Size(45, 40);
+            this.deleteChat_Button.TabIndex = 6;
+            this.deleteChat_Button.UseVisualStyleBackColor = true;
+            this.deleteChat_Button.Click += new System.EventHandler(this.deleteChat_Button_Click);
             // 
             // MessagesLayout
             // 
@@ -311,6 +328,7 @@ namespace Chat_application_with_windows_forms.Client
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoScroll = true;
             this.ClientSize = new System.Drawing.Size(1011, 571);
+            this.Controls.Add(this.reports_Group);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.new_conversation);
@@ -358,5 +376,6 @@ namespace Chat_application_with_windows_forms.Client
         private System.Windows.Forms.ListView groupsListView;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.Button viewGroup_button;
+        private System.Windows.Forms.Button reports_Group;
     }
 }

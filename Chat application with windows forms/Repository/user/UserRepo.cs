@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Chat_application_with_windows_forms.Repository.user
 {
-    class UserRepo
+    public class UserRepo
     {
         private SqlConnection conn;
 
