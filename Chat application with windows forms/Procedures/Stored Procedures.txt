@@ -25,3 +25,30 @@ BEGIN
 		where user_group.group_id = @Groupid;
 END;
 
+create procedure GROUPS_MOST_INTERACTED_WITH @Userid bigint  AS
+BEGIN
+				select top 5 group_message.group_id as group_id,  count(*) as total_messages
+						from dbo.group_message 
+						where group_message.sender_id = @Userid 
+						group by group_message.group_id 
+						order by total_messages desc;
+END;
+
+create procedure RECEIVED_MOST_MESSAGES_FROM @Userid bigint  AS
+BEGIN
+				select top 5 user_message.sender_id as sender,  count(*) as total_messages
+					from dbo.user_message 
+					where user_message.receiver_id = @Userid 
+					group by user_message.sender_id 
+					order by total_messages desc;
+END;
+
+create procedure SENT_MOST_MESSAGES @Userid bigint  AS
+BEGIN
+	select top 5 user_message.receiver_id as receiver,  count(*) as total_messages
+	
+	from dbo.user_message 
+				where user_message.sender_id = @Userid
+			group by user_message.receiver_id 
+		order by total_messages desc;
+END;
