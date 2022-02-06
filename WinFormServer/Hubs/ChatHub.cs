@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WinFormServer.Security;
 
 namespace Chat_application_with_windows_forms.Hubs
 {
@@ -16,6 +17,11 @@ namespace Chat_application_with_windows_forms.Hubs
         /** <PhoneNumber , ConnectionId> */
         static Dictionary<string, string> reversed_users = new Dictionary<string, string>();
 
+        /** <PhoneNumber , Public Key> */
+        static Dictionary<string, byte[]> user_public_key = new Dictionary<string, byte[]>();
+        /** <PhoneNumber , IV> */
+        static Dictionary<string, byte[]> user_IV = new Dictionary<string, byte[]>();
+
         public static event ClientConnectionEventHandler ClientConnected;
 
         /**
@@ -26,7 +32,7 @@ namespace Chat_application_with_windows_forms.Hubs
         {
             users.Add(Context.ConnectionId, Context.ConnectionId);
             Console.WriteLine("Hub: User connected {0}", Context.ConnectionId);
-           
+          
             return base.OnConnected();
         }
 
@@ -50,7 +56,7 @@ namespace Chat_application_with_windows_forms.Hubs
             users.Remove(con);
             Console.WriteLine("User {0} is now logged out", phone);
         }
-        public void setPhoneNumber(string phone)
+        public void setPhoneNumber(string phone,byte[] publickey, byte[] iv)
         {
             string existingCon = null;
 
@@ -80,6 +86,10 @@ namespace Chat_application_with_windows_forms.Hubs
                 Console.WriteLine(entry.Key + " : " + entry.Value);
             }
 
+
+            user_public_key.Add(phone, publickey);
+            user_IV.Add(phone, iv);
+            Console.WriteLine("Registered users public key and iv");
             Clients.All.populateContactBoxWithContacts();
         }
 
@@ -146,6 +156,83 @@ namespace Chat_application_with_windows_forms.Hubs
                 reversed_users.TryGetValue(phone.Trim(), out con);
                 return con;
             }).ToList();
+        }
+
+        public void sendGroupMessage(string senderphone, List<string> participantsPhoneNumbers
+            , Dictionary<string, byte[]> differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers, byte[] senderPublic,byte[] senderiv)
+        {
+            Console.WriteLine("Server -> sendGroupMessage: Got senderphone {0}",senderphone);
+            string con = "";
+            reversed_users.TryGetValue(senderphone.Trim(), out con);
+           
+            if (con != null)
+            {
+                List<string> connectionIds
+                = getConnectionIdsOfPhoneNumbers(participantsPhoneNumbers)
+                    .Where(phone => phone != null)
+                  .ToList();
+                Console.WriteLine("Server: Calling client method: AddGroupChat");
+                Clients.Clients(connectionIds).AddGroupChat(senderphone, differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers,senderPublic,senderiv);
+            }
+        }
+
+        public void getUsersPublicKeys(string senderphone , List<string> users)
+        {
+            Console.WriteLine("Server: Got senderphone (to get users) {0}", senderphone);
+            string con = "";
+            reversed_users.TryGetValue(senderphone.Trim(), out con);
+            if (con != null)
+            {
+                List<string> connectionIds
+                = getConnectionIdsOfPhoneNumbers(users)
+                    .Where(phone => phone != null)
+                  .ToList();
+
+                Console.WriteLine("Server: Calling client method");
+
+                Dictionary<string, byte[]> receiversPublicKeys = new Dictionary<string, byte[]>();
+
+
+                connectionIds.ForEach(cid =>
+                {
+                    string user = "";
+                    ChatHub.users.TryGetValue(cid, out user);
+
+                    if (user.Length > 0)
+                    {
+                        byte[] pkey = getPublicKeyOfUser(user.Trim());
+                        if (pkey != null)
+                        {
+                           try
+                            {
+                                receiversPublicKeys.Add(user.Trim(), pkey);
+                            } catch (System.ArgumentException) { Console.WriteLine("Server error: An item with the same key has already been added."); }
+                        } 
+                           
+                    }
+                    
+                });
+
+                Console.WriteLine("Users pkeys {0}", receiversPublicKeys.Count);
+
+                Clients.Clients(connectionIds).RegisterPublicKeys(receiversPublicKeys);
+            }
+        }
+
+        private byte[] getPublicKeyOfUser(string phone)
+        {
+           foreach (KeyValuePair<string, byte[]>  k in user_public_key)
+            {
+                if (k.Key.Trim().Equals(phone.Trim()))
+                {
+                    return k.Value;
+                }
+            }
+            return null;
+        }
+        public void refreshChatOfUserWithUser(string sender,string receiver)
+        {
+
         }
     }
 }

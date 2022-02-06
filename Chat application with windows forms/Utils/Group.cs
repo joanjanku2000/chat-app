@@ -2,6 +2,7 @@
 using Chat_application_with_windows_forms.Entities;
 using Chat_application_with_windows_forms.MessageBoxes;
 using Chat_application_with_windows_forms.Repository.group;
+using Chat_application_with_windows_forms.Security;
 using Microsoft.AspNet.SignalR.Client;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,10 @@ namespace Chat_application_with_windows_forms.Utils
         
         private HubConnection _signalRConnection;
         private IHubProxy _hubProxy;
+        private Dictionary<string, byte[]> receiversPublicKeys;
+        private DiffieHellman localDiffie;
 
-        public GroupInfoForm(Group g, GroupRepository gr,List<User> co,User logged, HubConnection con , IHubProxy proxy)
+        public GroupInfoForm(Group g, GroupRepository gr,List<User> co,User logged, HubConnection con , IHubProxy proxy,DiffieHellman localdiffie)
         {
             group = g;
             repo = gr;
@@ -33,8 +36,10 @@ namespace Chat_application_with_windows_forms.Utils
             contacts = co;
             this._hubProxy = proxy;
             this._signalRConnection = con;
+            this.localDiffie = localdiffie;
 
-            _hubProxy.On<string,string>("AddGroupChat", (sender, message) => this.Invoke(new Action(() => addGroupChat(sender, message))));
+            _hubProxy.On<string,Dictionary<string, byte[]>, byte[],byte[]>("AddGroupChat", (sender, message, publicKey, IV) => this.Invoke(new Action(() => addGroupChat(sender, message,publicKey,IV))));
+           
 
             InitializeComponent();
             populateListView();
@@ -48,6 +53,8 @@ namespace Chat_application_with_windows_forms.Utils
             }
 
             fillChatBoxWithMessagesFromTheDatabase();
+
+            _hubProxy.On<Dictionary<string, byte[]>>("RegisterPublicKeys", (publicKeys) => this.Invoke(new Action(() => RegisterPublicKeys(publicKeys))));
         }
 
         private Boolean userIsAllowedToEditGroup()
@@ -159,25 +166,86 @@ namespace Chat_application_with_windows_forms.Utils
             return sender + actualMessage;
         }
 
-        private void sendMessage(string message)
+        private async void sendMessage(string message)
         {
-            Console.WriteLine("Client: Saving the message");
-            repo.addMessageToGroup(group.id, logged.id, message);
-            Console.WriteLine("Client: Saved the message");
             List<User> receivers = group.participants;
             receivers.Add(group.admin);
             Console.WriteLine("Client: Found receivers");
+
+            // TODO Encryption for the database
+            Console.WriteLine("Client: Saving the message");
+            repo.addMessageToGroup(group.id, logged.id, message);
+            Console.WriteLine("Client: Saved the message");
+
+
+            await getPublicKeysOfReceivers(logged.phoneNumber.Trim(), receivers.Select(u => u.phoneNumber.Trim()).ToList());
+
+            Dictionary<string,byte[]> receiversPublicKeys = this.receiversPublicKeys;
+            Console.WriteLine("Client:Found pkeys for {0} users", receiversPublicKeys.Count);
+
+            Dictionary<string, byte[]> differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers = new Dictionary<string, byte[]>();
+
+            if (receiversPublicKeys != null)
+            {
+                foreach (KeyValuePair<string, byte[]> k in receiversPublicKeys)
+                {
+                    byte[] encryptedMessage = localDiffie.Encrypt(k.Value, message);
+                    // key = phone number 
+                    differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers.Add(k.Key, encryptedMessage);
+                }
+            }
+
+            Console.WriteLine("Client: Encrypted messages for {0} users",differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers.Count);
 
             List<string> receiversPhoneNumber = receivers
                 .Select(r => r.phoneNumber.Trim())
                 .ToList();
 
-            _hubProxy.Invoke("sendGroupMessage", logged.phoneNumber, receiversPhoneNumber, message);
+            await _hubProxy.Invoke("sendGroupMessage", logged.phoneNumber, receiversPhoneNumber, differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers
+                , localDiffie.PublicKey,localDiffie.IV);
             Console.WriteLine("Client: Invoked remote method");
         }
 
-        private void addGroupChat(string senderPhoneNumber, string message)
+       
+
+        public async Task getPublicKeysOfReceivers(string sender, List<string> receivers)
         {
+            await _hubProxy.Invoke("getUsersPublicKeys", sender, receivers);
+        }
+
+
+        void RegisterPublicKeys(Dictionary<string, byte[]> receiversPublicKeys)
+        {
+            this.receiversPublicKeys = receiversPublicKeys;
+        }
+
+        private void addGroupChat(string senderPhoneNumber,
+            Dictionary<string,byte[]> differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers
+            , byte[] publicKey, byte[] IV)
+        {
+
+            // Gjej mesazhin e enkriptum per ty
+            Console.WriteLine("Receiver: differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers sizze is {0}"
+                , differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers.Count);
+            string message = null;
+            
+            foreach (KeyValuePair<string, byte[]> k in differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers)
+            {
+                if (logged.phoneNumber.Trim().Equals(k.Key.Trim()))
+                {
+                    message = localDiffie.Decrypt(publicKey, k.Value, IV);
+                    break;
+                }
+            }
+
+            if (message == null)
+            {
+                Console.WriteLine("Error,mesazhi eshte null, nuk eshte dekriptum");
+                return;
+
+            }
+
+            Console.WriteLine("Message {0}", message);
             Console.WriteLine("Client: Method addGroupChat called by server");
             if (senderPhoneNumber.Trim().Equals(logged.phoneNumber.Trim())){
                 chatbox_Box.Text += "You: " + message.Trim();
@@ -190,7 +258,7 @@ namespace Chat_application_with_windows_forms.Utils
                 {
                     if (p.phoneNumber == senderPhoneNumber)
                     {
-                        chatbox_Box.Text += p.fullname().Trim() + ":  " + message.Trim();
+                        chatbox_Box.Text += p.fullname().Trim() + " : " +" "+ message.Trim();
                         chatbox_Box.AppendText(Environment.NewLine);
                     }
                 });

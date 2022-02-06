@@ -1,0 +1,286 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{56C8B42D-A131-4830-9C11-683E2DBAD1CE}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TemplateGuid>{122416d6-6b49-4ee2-a1e8-b825f31c79fe}</TemplateGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>XamarinApp</RootNamespace>
+    <AssemblyName>XamarinApp</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>True</Deterministic>
+    <AndroidApplication>True</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <AndroidUseLatestPlatformSdk>false</AndroidUseLatestPlatformSdk>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidEnableSGenConcurrent>true</AndroidEnableSGenConcurrent>
+    <AndroidUseAapt2>true</AndroidUseAapt2>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidManagedSymbols>true</AndroidManagedSymbols>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+    <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\AppLocator.cs" />
+    <Compile Include="Resources\AppShell.xaml.cs">
+      <DependentUpon>AppShell.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\AssemblyInfo.cs" />
+    <Compile Include="Resources\Helpers\Constants.cs" />
+    <Compile Include="Resources\Helpers\MyEventArgs\KeyboardAppearEventArgs.cs" />
+    <Compile Include="Resources\Helpers\MyEventArgs\MyFocusEventArgs.cs" />
+    <Compile Include="Resources\Helpers\MyEventArgs\ScrollToItemEventArgs.cs" />
+    <Compile Include="Resources\Models\Item.cs" />
+    <Compile Include="Resources\obj\Debug\netstandard2.0\.NETStandard,Version=v2.0.AssemblyAttributes.cs" />
+    <Compile Include="Resources\obj\Debug\netstandard2.0\FreeChat.AssemblyInfo.cs" />
+    <Compile Include="Resources\obj\Release\netstandard2.0\.NETStandard,Version=v2.0.AssemblyAttributes.cs" />
+    <Compile Include="Resources\obj\Release\netstandard2.0\FreeChat.AssemblyInfo.cs" />
+    <Compile Include="Resources\PlatformSpecifics\IGetSafeAreaInsetiOS.cs" />
+    <Compile Include="Resources\Resources\TextResources.Designer.cs" />
+    <Compile Include="Resources\Services\IConversationsDataStore.cs" />
+    <Compile Include="Resources\Services\IDataStore.cs" />
+    <Compile Include="Resources\Services\IMessageDataStore.cs" />
+    <Compile Include="Resources\Services\MockDataStore.cs" />
+    <Compile Include="Resources\Services\MockDataStores\ConversationsDataStore.cs" />
+    <Compile Include="Resources\Services\MockDataStores\MessagesDataStore.cs" />
+    <Compile Include="Resources\Services\MockDataStores\UserDataStores.cs" />
+    <Compile Include="Resources\Services\Navigation\Constants.cs" />
+    <Compile Include="Resources\Services\Navigation\INavigationService.cs" />
+    <Compile Include="Resources\Services\Navigation\SimpleNavigationService.cs" />
+    <Compile Include="Resources\Styles\Colors.xaml.cs">
+      <DependentUpon>Colors.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Styles\ControlStyles.xaml.cs">
+      <DependentUpon>ControlStyles.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Styles\Fonts.xaml.cs">
+      <DependentUpon>Fonts.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Styles\MarkupExtensions\ImageResourceMarkupExtension.cs" />
+    <Compile Include="Resources\Styles\ValueConverters\DateHUmanizerConverter.cs" />
+    <Compile Include="Resources\Styles\ValueConverters\ImageResourceValueConverter.cs" />
+    <Compile Include="Resources\Styles\ValueConverters\IsNullConverter.cs" />
+    <Compile Include="Resources\ViewModels\BaseViewModel.cs" />
+    <Compile Include="Resources\ViewModels\ConversationsViewModel.cs" />
+    <Compile Include="Resources\ViewModels\Helpers\MessagesGroup.cs" />
+    <Compile Include="Resources\ViewModels\MessagesViewModel.cs" />
+    <Compile Include="Resources\ViewModels\SettingsViewModel.cs" />
+    <Compile Include="Resources\Views\CustomControls\FloatingButton.xaml.cs">
+      <DependentUpon>FloatingButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\CustomControls\MessageBubble.xaml.cs">
+      <DependentUpon>MessageBubble.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\CustomControls\ToggleButton.xaml.cs">
+      <DependentUpon>ToggleButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\DataTemplates\BaseTemplate.cs" />
+    <Compile Include="Resources\Views\DataTemplates\MesageISentTemplate.xaml.cs">
+      <DependentUpon>MesageISentTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\DataTemplates\MessagePeerSentTemplate.xaml.cs">
+      <DependentUpon>MessagePeerSentTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\DataTemplates\SimpleUserProfileTemplate.xaml.cs">
+      <DependentUpon>SimpleUserProfileTemplate.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\Effects\BaseFreechatEffect.cs" />
+    <Compile Include="Resources\Views\Effects\BorderlessEditorEffect.cs" />
+    <Compile Include="Resources\Views\Effects\BorderlessEntryEffect.cs" />
+    <Compile Include="Resources\Views\Effects\iOSSafeAreaInsetEffect.cs" />
+    <Compile Include="Resources\Views\Pages\BasePage.cs" />
+    <Compile Include="Resources\Views\Pages\BaseTabbedPage.xaml.cs">
+      <DependentUpon>BaseTabbedPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\Pages\ConversationsPage.xaml.cs">
+      <DependentUpon>ConversationsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\Pages\MessagesPage.xaml.cs">
+      <DependentUpon>MessagesPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\Pages\SettingsPage.xaml.cs">
+      <DependentUpon>SettingsPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Resources\Views\TemplateSelectors\ChatBubbleTemplateSelctor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml" />
+    <None Include="Assets\AboutAssets.txt" />
+    <AndroidResource Include="Resources\obj\Debug\netstandard2.0\FreeChat.AssemblyInfoInputs.cache" />
+    <AndroidResource Include="Resources\obj\Debug\netstandard2.0\FreeChat.GeneratedMSBuildEditorConfig.editorconfig" />
+    <AndroidResource Include="Resources\obj\Release\netstandard2.0\FreeChat.AssemblyInfoInputs.cache" />
+    <AndroidResource Include="Resources\obj\Release\netstandard2.0\FreeChat.GeneratedMSBuildEditorConfig.editorconfig" />
+    <AndroidResource Include="Resources\FodyWeavers.xsd">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\FreeChat.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\bin\Debug\netstandard2.0\ref\" />
+    <Folder Include="Resources\bin\Release\netstandard2.0\ref\" />
+    <Folder Include="Resources\obj\Debug\netstandard2.0\ref\" />
+    <Folder Include="Resources\obj\Release\netstandard2.0\ref\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Xamarin.Android.Support.v7.AppCompat">
+      <Version>28.0.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.AndroidX.AppCompat" Version="1.2.0.5" />
+    <PackageReference Include="Xamarin.AndroidX.Lifecycle.LiveData">
+      <Version>2.3.1.3</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.0.0.1" />
+    <PackageReference Include="Xamarin.Essentials" Version="1.6.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\obj\Debug\netstandard2.0\FreeChat.csproj.FileListAbsolute.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Resources\TextResources.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Resources\Images\alfredo.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Resources\Images\carelle.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Resources\Images\john.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Resources\Images\rea.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Resources\Images\rebeca.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Styles\Colors.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Styles\ControlStyles.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Styles\Fonts.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\CustomControls\FloatingButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\CustomControls\MessageBubble.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\CustomControls\ToggleButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\DataTemplates\MesageISentTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\DataTemplates\MessagePeerSentTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\DataTemplates\SimpleUserProfileTemplate.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\Pages\BaseTabbedPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\Pages\ConversationsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\Pages\MessagesPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Views\Pages\SettingsPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\AppShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\FodyWeavers.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+    Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+  -->
+</Project>

@@ -79,6 +79,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>chat_applicatinDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Security\Security.cs" />
     <Compile Include="Server.cs">
       <SubType>Form</SubType>
     </Compile>

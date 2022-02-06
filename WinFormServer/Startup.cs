@@ -1,6 +1,8 @@
 ﻿
 using Owin;
 using Microsoft.Owin.Cors;
+using Microsoft.AspNet.SignalR;
+
 namespace Chat_application_with_windows_forms
 {
     class Startup
@@ -10,7 +12,9 @@ namespace Chat_application_with_windows_forms
             //CORS need to be enabled for calling SignalR service 
             app.UseCors(CorsOptions.AllowAll);
             //Find and reigster SignalR hubs
-            app.MapSignalR();
+            var hubConfiguration = new HubConfiguration();
+            hubConfiguration.EnableDetailedErrors = true;
+            app.MapSignalR(hubConfiguration);
         }
     }
 }

@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:BasePage xmlns="http://xamarin.com/schemas/2014/forms"
+                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                xmlns:d="http://xamarin.com/schemas/2014/forms/design"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d"
+                Shell.PresentationMode="ModalAnimated"
+                x:Class="FreeChat.Views.Pages.MessagesPage"
+                xmlns:customControls="clr-namespace:FreeChat.Views.CustomControls"
+                xmlns:dataTemplates="clr-namespace:FreeChat.Views.DataTemplates"
+                xmlns:root="clr-namespace:FreeChat"
+                xmlns:local="clr-namespace:FreeChat.Views.Pages"
+                xmlns:effects="clr-namespace:FreeChat.Views.Effects"
+                xmlns:xe="clr-namespace:XamEffects;assembly=XamEffects"
+                xmlns:xf="clr-namespace:Xamarin.Forms.Core;assembly=Xamarin.Forms.Core"
+                xmlns:pancakeView="clr-namespace:Xamarin.Forms.PancakeView;assembly=Xamarin.Forms.PancakeView"
+                BindingContext="{x:Static root:AppLocator.MessagesViewModel}"
+                xmlns:dataTemplateSelector="clr-namespace:FreeChat.Views.TemplateSelectors"
+                BackgroundColor="{StaticResource PrimaryColor}"             
+                xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+                ios:Page.UseSafeArea="true"
+                x:Name="MessagePagecmdeio">
+
+    <ContentPage.Content>
+
+        <Grid x:Name="ContainerGrid">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <Grid VerticalOptions="Start">
+
+                <Grid.Margin>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <On Platform="iOS" Value="0,0"/>
+                        <On Platform="Android" Value="0,-10 ,0,0"/>
+                    </OnPlatform>
+                </Grid.Margin>
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!--<xe:BorderView BackgroundColor="Red" xe:TouchEffect.Color="AliceBlue"
+                               xe:Commands.Tap="{Binding Source={x:Reference MessagePagecmdeio}, Path=BackCommand}">
+                    <Label Text="what !!"/>
+                </xe:BorderView>-->
+
+                <customControls:FloatingButton Margin="5,0,0,0"
+                                               HorizontalOptions="Start"
+                                               VerticalOptions="Center" 
+                                               CornerRadius="90"
+                                               HeightRequest="40" WidthRequest="40"
+                                               IconSize="25"
+                                               PressedCommand="{Binding Source={x:Reference MessagePagecmdeio}, Path=BackCommand}"
+                                               Icon="{StaticResource FontAwesomeChevronLeft}"
+                                               BackgroundColor="{StaticResource PrimaryColor}" 
+                                               HasShadow="False"
+                                               IconColor="{StaticResource AccentColor}">
+                    <customControls:FloatingButton.Margin>
+                        <OnPlatform x:TypeArguments="Thickness">
+                            <On Platform="iOS" Value="0"/>
+                            <On Platform="Android" Value="5,0 ,0,0"/>
+                        </OnPlatform>
+                    </customControls:FloatingButton.Margin>
+                </customControls:FloatingButton>
+
+                <dataTemplates:SimpleUserProfileTemplate BindingContext="{Binding CurrentConversation}"
+                                                         Grid.Column="1" 
+                                                         IsInTitle="True"
+                                                         IsUserTyping="{Binding BindingContext.IsTyping, Source={x:Reference MessagePagecmdeio}}">
+                    <dataTemplates:SimpleUserProfileTemplate.Margin>
+                    <OnPlatform x:TypeArguments="Thickness">
+                        <On Platform="iOS" Value="-25,0,0,0"/>
+                        <On Platform="Android" Value="-25,0,0,0"/>
+                    </OnPlatform>
+                    </dataTemplates:SimpleUserProfileTemplate.Margin>
+                </dataTemplates:SimpleUserProfileTemplate>
+
+                <StackLayout Orientation="Horizontal" Grid.Column="2"
+                             VerticalOptions="Center"
+                             HorizontalOptions="End">
+                    <StackLayout.Margin>
+                        <OnPlatform x:TypeArguments="Thickness">
+                            <On Platform="iOS" Value="0,0,0,0"/>
+                            <On Platform="Android" Value="0,0,0,0"/>
+                        </OnPlatform>
+                    </StackLayout.Margin>
+
+                    <customControls:FloatingButton Icon="{StaticResource FontAwesomePhone}"
+                                                   IconColor="{StaticResource AccentColor}"
+                                                   HasShadow="False"
+                                                   BackgroundColor="{StaticResource PrimaryColor}"
+                                                   IconSize="25" 
+                                                   CornerRadius="90"
+                                                   WidthRequest="40"
+                                                   HeightRequest="40"/>
+
+                    <customControls:FloatingButton Icon="{StaticResource FontAwesomeVideo}"
+                                                   IconColor="{StaticResource AccentColor}"
+                                                   HasShadow="False" 
+                                                   CornerRadius="90"
+                                                   BackgroundColor="{StaticResource PrimaryColor}"
+                                                   IconSize="25"
+                                                   WidthRequest="40"
+                                                   HeightRequest="40"
+                                                   Margin="0,0,10,0"/>
+                </StackLayout>
+
+            </Grid>
+
+            <Grid Grid.Row="1" x:Name="MessagesGrid">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <CollectionView ItemsSource="{Binding Messages}"
+                                IsGrouped="True" Grid.Row="0"
+                                BackgroundColor="{StaticResource PrimaryColor}"
+                                x:Name="MessagesCollectionView">
+
+                    <CollectionView.GroupHeaderTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Text="{Binding GroupHeader}"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Margin="15"
+                                       FontFamily="{StaticResource QuickSandRegular}"
+                                       TextColor="{StaticResource SecondaryTextColor}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.GroupHeaderTemplate>
+
+                    <CollectionView.ItemTemplate>
+                        <dataTemplateSelector:ChatBubbleTemplateSelctor />
+                    </CollectionView.ItemTemplate>
+
+                </CollectionView>
+
+
+                <Grid Grid.Row="2" x:Name="WriteContainerGrid">
+                    <Grid.Margin>
+                        <OnPlatform x:TypeArguments="Thickness">
+                            <On Platform="iOS" Value="0"/>
+                        </OnPlatform>
+                    </Grid.Margin>
+                    <Grid.ColumnDefinitions >
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <pancakeView:PancakeView HasShadow="True"
+                                             CornerRadius="20"
+                                         Style="{StaticResource LightShadowPancakeViewStyle}"
+                                             BackgroundColor="White">
+
+                        <pancakeView:PancakeView.Margin>
+                            <OnPlatform x:TypeArguments="Thickness">
+                                <On Platform="Android" Value="10,0,0,10"/>
+                                <On Platform="iOS" Value="10,0,0,0"/>
+                            </OnPlatform>
+                        </pancakeView:PancakeView.Margin>
+                        
+                        <Grid>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <pancakeView:PancakeView Margin="10,10,10,0" IsVisible="{Binding Converter={StaticResource IsNullValueConverter}}"
+                                                     BindingContext="{Binding ReplyMessage}">
+                                <Grid HeightRequest="70">
+
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition />
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                <BoxView BackgroundColor="{StaticResource PrimaryColor}" Grid.ColumnSpan="3" />
+                                <BoxView WidthRequest="2" BackgroundColor="{StaticResource AccentColor}"/>
+
+                                <StackLayout Grid.Column="1"
+                                             Grid.ColumnSpan="2"
+                                             Margin="1">
+                                    <Label FontFamily="{StaticResource QuickSandBold}"
+                                           LineBreakMode="TailTruncation"
+                                           Margin="0,0,0,5">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Sender.FirstName}" />
+                                                <Span Text=" " />
+                                                <Span Text="{Binding Sender.LastName}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    <Label Text="{Binding Content}"
+                                           LineBreakMode="TailTruncation"
+                                           Grid.Column="1"/>
+                                </StackLayout>
+
+                                <customControls:FloatingButton Grid.Column="2"
+                                                               IconSize="15"
+                                                               HeightRequest="30"
+                                                               WidthRequest="30"
+                                                               HorizontalOptions="End"
+                                                               VerticalOptions="Start"
+                                                               HasShadow="False"
+                                                               BackgroundColor="Transparent"
+                                                               PressedCommand="{Binding BindingContext.CancelReplyCommand, Source={x:Reference MessagePagecmdeio}}"
+                                                               Icon="{StaticResource FontAwesomeTimes}"
+                                                               IconColor="{StaticResource PrimaryTextColor}"/>
+                            </Grid>
+                            </pancakeView:PancakeView>
+
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Editor Placeholder="Message"
+                                        Margin="10,5,5,10"
+                                        AutoSize="TextChanges"
+                                        Text="{Binding CurrentMessage}"
+                                        VerticalOptions="Center"
+                                        FontFamily="{StaticResource QuickSandRegular}"
+                                        FontAttributes="Bold"
+                                        x:Name="TextInput">
+
+                                    <!--<VisualStateManager.VisualStateGroups>
+                                        <VisualStateGroup x:Name="CommonStates">
+                                            <VisualState x:Name="Focused">
+                                                <VisualState.Setters>
+                                                    <Setter Property="TranslationY"
+                                                            TargetName="ContainerGrid">
+                                                        <Setter.Value>
+                                                            <OnPlatform x:TypeArguments="x:Double">
+                                                                <On Platform="Android" Value="-20"/>
+                                                                <On Platform="iOS" Value="0"/>
+                                                            </OnPlatform>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                            <VisualState x:Name="Unfocused">
+                                                <VisualState.Setters>
+                                                    <Setter Property="Margin"
+                                                            TargetName="ContainerGrid">
+                                                        <Setter.Value>
+                                                            <OnPlatform x:TypeArguments="Thickness">
+                                                                <On Platform="Android" Value="0,0,0,0"/>
+                                                                <On Platform="iOS" Value="0"/>
+                                                            </OnPlatform>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </VisualState.Setters>
+                                            </VisualState>
+                                        </VisualStateGroup>
+                                    </VisualStateManager.VisualStateGroups>-->
+                                    
+                                    <Editor.Effects>
+                                        <OnPlatform x:TypeArguments="effects:BaseFreechatEffect">
+                                            <On Platform="iOS">
+                                                <On.Value>
+                                                    <effects:BorderlessEditorEffect />
+                                                </On.Value>
+                                            </On>
+                                            <On Platform="Android">
+                                                <On.Value>
+                                                    <effects:BorderlessEntryEffect />
+                                                </On.Value>
+                                            </On>
+                                        </OnPlatform>
+                                    </Editor.Effects>
+
+                                </Editor>
+
+                                <customControls:FloatingButton CornerRadius="90"
+                                                               Grid.Column="1"
+                                                               HeightRequest="50"
+                                                               WidthRequest="50"
+                                                               Margin="5"
+                                                               Icon="{StaticResource FontAwesomePaperClip}"
+                                                               IconColor="{StaticResource PrimaryTextColor}"
+                                                               BackgroundColor="White"
+                                                               HasShadow="False"/>
+                            </Grid>
+
+                        </Grid>
+                    </pancakeView:PancakeView>
+
+                    <customControls:FloatingButton Grid.Column="1" WidthRequest="60" HeightRequest="60"
+                                                   HorizontalOptions="Center" VerticalOptions="Center"
+                                                   BackgroundColor="{StaticResource AccentColor}"
+                                                   PressedCommand="{Binding SendMessageCommand}"
+                                                   Icon="{StaticResource FontAwesomePaperPlane}"
+                                                   IconColor="{StaticResource PrimaryColor}"
+                                         Style="{StaticResource LightShadowPancakeViewStyle}"
+                                                   Margin="5,0,10,0">
+                        <customControls:FloatingButton.Margin>
+                            <OnPlatform x:TypeArguments="Thickness">
+                                <On Platform="iOS" Value="5,0,10,0"/>
+                                <On Platform="Android" Value="5,0,10,5"/>
+                            </OnPlatform>
+                        </customControls:FloatingButton.Margin>
+                    </customControls:FloatingButton>
+                </Grid>
+                
+            </Grid>
+
+        </Grid>
+        
+    </ContentPage.Content>
+    
+</local:BasePage>

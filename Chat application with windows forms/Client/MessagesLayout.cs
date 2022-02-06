@@ -19,6 +19,7 @@ using static System.Windows.Forms.ListView;
 using Chat_application_with_windows_forms.Utils;
 using MessageBox = System.Windows.Forms.MessageBox;
 using Chat_application_with_windows_forms.Repository.group;
+using Chat_application_with_windows_forms.Security;
 
 namespace Chat_application_with_windows_forms.Client
 {
@@ -43,7 +44,7 @@ namespace Chat_application_with_windows_forms.Client
 
         private GroupRepository groupRepository;
         private List<Group> groupsOfUser;
-
+        private DiffieHellman localDiffie;
         public MessagesLayout(User loggedUser)
         {
             InitializeComponent();
@@ -57,6 +58,8 @@ namespace Chat_application_with_windows_forms.Client
             userChatsFromDatabase = messageRepo.findChatsOfUser(loggedUser.id);
             groupRepository = new GroupRepository();
             groupsOfUser = new List<Group>();
+            localDiffie = new DiffieHellman();
+
             //  populateContactBoxWithContacts();
 
             ConnectAsync();
@@ -133,7 +136,7 @@ namespace Chat_application_with_windows_forms.Client
                 Console.WriteLine(e.Message);
             }
 
-            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber);
+            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber,localDiffie.PublicKey,localDiffie.IV);
 
             Console.WriteLine("Connection established");
         }
@@ -693,8 +696,10 @@ namespace Chat_application_with_windows_forms.Client
            
             if (selected != null)
             {
-                GroupInfoForm form = new GroupInfoForm(selected.group, groupRepository, contacts, loggedUser,_signalRConnection,_hubProxy);
+                GroupInfoForm form = new GroupInfoForm(selected.group, groupRepository, contacts, loggedUser,_signalRConnection,_hubProxy,localDiffie);
                 form.ShowDialog();
+                form.Close();
+                form.Dispose();
 
                 // Ne rast se groupi eshte fshire
                 getGroupsOfUser();

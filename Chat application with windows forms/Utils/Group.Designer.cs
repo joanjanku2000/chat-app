@@ -144,7 +144,7 @@ namespace Chat_application_with_windows_forms.Utils
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(29, 148);
-            this.button4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(103, 19);
             this.button4.TabIndex = 5;
