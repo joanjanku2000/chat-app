@@ -155,7 +155,7 @@ namespace Chat_application_with_windows_forms.Hubs
                 string con = "";
                 reversed_users.TryGetValue(phone.Trim(), out con);
                 return con;
-            }).ToList();
+            }).Distinct().ToList();
         }
 
         public void sendGroupMessage(string senderphone, List<string> participantsPhoneNumbers
@@ -170,9 +170,10 @@ namespace Chat_application_with_windows_forms.Hubs
                 List<string> connectionIds
                 = getConnectionIdsOfPhoneNumbers(participantsPhoneNumbers)
                     .Where(phone => phone != null)
+                    .Distinct()
                   .ToList();
-                Console.WriteLine("Server: Calling client method: AddGroupChat");
-                Clients.Clients(connectionIds).AddGroupChat(senderphone, differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers,senderPublic,senderiv);
+                Console.WriteLine("Server: Calling client method: AddGroupChat on {0} clients",connectionIds.Count);
+                Clients.Clients(connectionIds).AddGroupChat(senderphone, differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers,senderPublic,senderiv,true);
             }
         }
 
@@ -206,7 +207,7 @@ namespace Chat_application_with_windows_forms.Hubs
                            try
                             {
                                 receiversPublicKeys.Add(user.Trim(), pkey);
-                            } catch (System.ArgumentException) { Console.WriteLine("Server error: An item with the same key has already been added."); }
+                            } catch (ArgumentException) { Console.WriteLine("Server error: An item with the same key has already been added."); }
                         } 
                            
                     }

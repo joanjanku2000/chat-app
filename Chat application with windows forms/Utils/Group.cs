@@ -38,8 +38,12 @@ namespace Chat_application_with_windows_forms.Utils
             this._signalRConnection = con;
             this.localDiffie = localdiffie;
 
-            _hubProxy.On<string,Dictionary<string, byte[]>, byte[],byte[]>("AddGroupChat", (sender, message, publicKey, IV) => this.Invoke(new Action(() => addGroupChat(sender, message,publicKey,IV))));
-           
+            if (!this.IsHandleCreated)
+            {
+                this.CreateHandle();
+            }
+
+          
 
             InitializeComponent();
             populateListView();
@@ -54,13 +58,18 @@ namespace Chat_application_with_windows_forms.Utils
 
             fillChatBoxWithMessagesFromTheDatabase();
 
-            _hubProxy.On<Dictionary<string, byte[]>>("RegisterPublicKeys", (publicKeys) => this.Invoke(new Action(() => RegisterPublicKeys(publicKeys))));
+
+            _hubProxy.On<string, Dictionary<string, byte[]>, byte[], byte[],bool>("AddGroupChat",  (sender, message, publicKey, IV,flag)
+                           =>  Invoke(new Action(() => addGroupChat(sender, message, publicKey, IV,flag))));
+
+            _hubProxy.On<Dictionary<string, byte[]>>("RegisterPublicKeys", (publicKeys) => RegisterPublicKeys(publicKeys));
         }
 
         private Boolean userIsAllowedToEditGroup()
         {
             return group.admin.id == logged.id;
         }
+
         private void makeButtonsNotClickable()
         {
             button3.Enabled = false;
@@ -159,7 +168,7 @@ namespace Chat_application_with_windows_forms.Utils
 
         private string extractMessageFormatForTextBox(GroupMessage message)
         {
-            string sender = logged.id == message.sender.id ? "You: " : message.sender.name.Trim();
+            string sender = logged.id == message.sender.id ? "You: " : message.sender.name.Trim() + " : ";
 
             string actualMessage = message.message.Trim();
 
@@ -171,6 +180,7 @@ namespace Chat_application_with_windows_forms.Utils
             List<User> receivers = group.participants;
             receivers.Add(group.admin);
             Console.WriteLine("Client: Found receivers");
+            Console.WriteLine("Sending message {0}", message.Trim());
 
             // TODO Encryption for the database
             Console.WriteLine("Client: Saving the message");
@@ -203,6 +213,7 @@ namespace Chat_application_with_windows_forms.Utils
 
             await _hubProxy.Invoke("sendGroupMessage", logged.phoneNumber, receiversPhoneNumber, differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers
                 , localDiffie.PublicKey,localDiffie.IV);
+
             Console.WriteLine("Client: Invoked remote method");
         }
 
@@ -221,8 +232,9 @@ namespace Chat_application_with_windows_forms.Utils
 
         private void addGroupChat(string senderPhoneNumber,
             Dictionary<string,byte[]> differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers
-            , byte[] publicKey, byte[] IV)
+            , byte[] publicKey, byte[] IV, bool flag)
         {
+            if (!flag) return;
 
             // Gjej mesazhin e enkriptum per ty
             Console.WriteLine("Receiver: differenteEncryptionsForTheSameMessageToAccomodateDifferentReceivers sizze is {0}"
@@ -247,6 +259,7 @@ namespace Chat_application_with_windows_forms.Utils
 
             Console.WriteLine("Message {0}", message);
             Console.WriteLine("Client: Method addGroupChat called by server");
+
             if (senderPhoneNumber.Trim().Equals(logged.phoneNumber.Trim())){
                 chatbox_Box.Text += "You: " + message.Trim();
                 chatbox_Box.AppendText(Environment.NewLine);
@@ -258,7 +271,9 @@ namespace Chat_application_with_windows_forms.Utils
                 {
                     if (p.phoneNumber == senderPhoneNumber)
                     {
-                        chatbox_Box.Text += p.fullname().Trim() + " : " +" "+ message.Trim();
+                        string formatM = p.fullname().Trim() + " : " + " " + message.Trim();
+
+                        chatbox_Box.Text += formatM; 
                         chatbox_Box.AppendText(Environment.NewLine);
                     }
                 });
@@ -266,14 +281,17 @@ namespace Chat_application_with_windows_forms.Utils
            
         }
 
-        private void send_Button_Click(object sender, EventArgs e)
-        {
+
+            private void send_Button_Click(object sender, EventArgs e) { 
             string messageToSend = message_Box.Text.Trim();
             if (messageToSend.Length > 0)
             {
                 Console.WriteLine("Client: Trying to send message");
                 sendMessage(messageToSend);
             }
+
+            message_Box.Clear();
+
         }
 
         private void message_Box_KeyPress(object sender, KeyPressEventArgs e)
@@ -286,6 +304,7 @@ namespace Chat_application_with_windows_forms.Utils
                     Console.WriteLine("Client: Trying to send message");
                     sendMessage(messageToSend);
                 }
+                message_Box.Clear();
             }
         }
     }
