@@ -63,6 +63,7 @@ namespace Chat_application_with_windows_forms.Login
                 this.loggedUser = login(phoneNumber,psw);
                 if (loggedUser != null)
                 {
+                 
                     this.Hide();
                
                     MessagesLayout messageLayout = new MessagesLayout(loggedUser);
@@ -72,6 +73,7 @@ namespace Chat_application_with_windows_forms.Login
                 
             }
         }
+
 
         private User login(string phonenumber,string password)
         {
@@ -90,8 +92,17 @@ namespace Chat_application_with_windows_forms.Login
                 string trimmedPsw = password.Trim();
                 if (PasswordHash.ValidatePassword(trimmedPsw, hashedPsw))
                 {
+                  
                     Console.WriteLine("Passwords match");
-                    return userRepo.findUserByPhoneNumber(phonenumber);
+                    loggedUser = userRepo.findUserByPhoneNumber(phonenumber);
+
+                    string userName = Environment.UserName;
+                    string filepathToSaveEncryptionData = "C:/Users/" + userName;
+
+                    Console.WriteLine("Writing encryption keys to filepath {0} ", filepathToSaveEncryptionData);
+                    RsaEncryption.generatePublicKeyAndPrivateKeyAndSaveItToLocation(filepathToSaveEncryptionData);
+
+                    return loggedUser;
                 } else
                 {
                     MessageB.ERROR("Not Found", "Personi me keto te dhena nuk u gjet! Ju lutem provoni perseri");

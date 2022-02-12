@@ -45,6 +45,10 @@ namespace Chat_application_with_windows_forms.Client
         private GroupRepository groupRepository;
         private List<Group> groupsOfUser;
         private DiffieHellman localDiffie;
+
+       
+
+
         public MessagesLayout(User loggedUser)
         {
             InitializeComponent();

@@ -17,6 +17,7 @@ namespace Chat_application_with_windows_forms.Entities
 
         public string hashedPassword;
 
+        
 
         public  User (Int64 id, string name, string lastName,string phoneNumber,bool online)
         {

@@ -121,4 +121,112 @@ namespace Chat_application_with_windows_forms.Security
             return decryptedMessage;
         }
     }
+
+    class RsaEncryption
+    {
+        
+
+        static public void generatePublicKeyAndPrivateKeyAndSaveItToLocation( string location)
+        {
+
+            string pkey_file_name = "public_k";
+            string priv_file_name = "privat_K";
+
+            string filepath_public = location + "/" + pkey_file_name;
+            string filepath_private = location + "/" + priv_file_name;
+
+            if (File.Exists(filepath_public)) { 
+                Console.WriteLine("File {} exists, not overrding", filepath_public);
+                return;
+            }
+
+            var csp = new RSACryptoServiceProvider(2048);
+            var privKey = csp.ExportParameters(true);
+            var pubKey = csp.ExportParameters(false);
+
+            string pubKeyString;
+            string privKeyString;
+
+            {
+                //we need some buffer
+                var sw = new System.IO.StringWriter();
+                var pw = new StringWriter();
+                //we need a serializer
+                var xs = new System.Xml.Serialization.XmlSerializer(typeof(RSAParameters));
+                //serialize the key into the stream
+                xs.Serialize(sw, pubKey);
+                xs.Serialize(pw, privKey);
+                //get the string from the stream
+                pubKeyString = sw.ToString();
+                privKeyString = pw.ToString();
+            }
+
+         
+
+            File.WriteAllText(filepath_public, pubKeyString);          
+            File.WriteAllText(filepath_private, privKeyString);
+
+         
+            File.SetAttributes(filepath_public, FileAttributes.ReadOnly);
+            File.SetAttributes(filepath_private, FileAttributes.ReadOnly);
+        }
+
+        static RSAParameters getRsaParameter(string key)
+        { 
+            var sr = new System.IO.StringReader(key);
+            var xs = new System.Xml.Serialization.XmlSerializer(typeof(RSAParameters));
+            return  (RSAParameters) xs.Deserialize(sr);
+        }
+
+
+        static string readKeyFromFile(string location)
+        {
+            return File.ReadAllText(location);
+        }
+
+        static public RSAParameters getPublicKey(string path)
+        {
+            string pkey_file_name = "public_k";
+            string filepath_public = path + "/" + pkey_file_name;
+
+            return getRsaParameter(readKeyFromFile(filepath_public));
+        }
+
+        static public RSAParameters getPrivateKey (string path)
+        {
+            string priv_file_name = "privat_K" ;
+            string filepath_private = path + "/" + priv_file_name;
+
+            return getRsaParameter(readKeyFromFile(filepath_private));
+        }
+
+        static public string RsaEncrypt(string message, RSAParameters publicKey)
+        {
+            var csp = new RSACryptoServiceProvider();
+            csp.ImportParameters(publicKey);
+
+            var bytesPlainTextData = System.Text.Encoding.Unicode.GetBytes(message);
+            var bytesCypherText = csp.Encrypt(bytesPlainTextData, false);
+            var cypherText = Convert.ToBase64String(bytesCypherText);
+
+            return cypherText;
+        }
+
+
+        static public string RsaDecrypt(string encryptedMessage , RSAParameters privKey)
+        {
+            var csp = new RSACryptoServiceProvider();
+            csp.ImportParameters(privKey);
+
+            byte[]  bytesCypherText = Convert.FromBase64String(encryptedMessage);
+
+            var bytesPlainTextData = csp.Decrypt(bytesCypherText, false);
+
+            return System.Text.Encoding.Unicode.GetString(bytesPlainTextData);
+
+        }
+
+       
+    
+}
 }

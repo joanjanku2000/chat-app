@@ -1,23 +1,33 @@
 ﻿using Chat_application_with_windows_forms.Exceptions;
 using Chat_application_with_windows_forms.Repository;
 using Chat_application_with_windows_forms.Repository.user;
+using Chat_application_with_windows_forms.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Chat_application_with_windows_forms.Entities
 {
+   
     public class MessageRepo
     {
+        private string filepathToAccessEncryptionData = "C:/Users/" + Environment.UserName;
+
+        private RSAParameters myPrivateKey ;
+        private RSAParameters myPublicKey;
+       
+        private User loggedUser; 
+
         private SqlConnection conn;
         private UserRepo userRepo;
 
         private static string ADD_MESSAGE
-            = "insert into user_message(sender_id,receiver_id,message,received,seen)  output INSERTED.ID " +
-            "values (@Senderid, @Receiverid, @Message,0,0)";
+            = "insert into user_message(sender_id,receiver_id,message,received,seen,message_encryption_for_sender)  output INSERTED.ID " +
+            "values (@Senderid, @Receiverid, @Message,0,0,@Messageforsender)";
 
         private static string FIND_MESSAGES_OF_USERS =
             "select * from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) or (sender_id = @Receiverid and receiver_id = @Senderid) order by id";
@@ -35,10 +45,13 @@ namespace Chat_application_with_windows_forms.Entities
           "delete from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) " +
             "or (sender_id = @Receiverid and receiver_id = @Senderid) ";
 
-        public MessageRepo ()
+        public MessageRepo (User loggedUser)
         {
             conn = DatabaseConnection.getInstance();
             userRepo = new UserRepo();
+            myPrivateKey = RsaEncryption.getPrivateKey(filepathToAccessEncryptionData);
+            myPublicKey = RsaEncryption.getPublicKey(filepathToAccessEncryptionData);
+
         }
         public void delete(long senderId,long receiverId)
         {
@@ -74,10 +87,14 @@ namespace Chat_application_with_windows_forms.Entities
                     m.id = reader.GetInt64(0);
                     m.senderId = reader.GetInt64(1);
                     m.receiverId = reader.GetInt64(2);
-                    m.message = reader.GetString(3);
+                    
+                    string messageEncryptedForReceiver = reader.GetString(3);
+                    string messageEncryptedForSender = reader.GetString(7);
+
                     m.received = reader.GetBoolean(5);
                     m.seen = reader.GetBoolean(6);
 
+                   
 
                 }
             }
@@ -100,14 +117,15 @@ namespace Chat_application_with_windows_forms.Entities
                 throw new BadRequestException("Not found message");
             }
         }
-        public Message sendMessage(User sender, User receiver , string message)
+        public Message sendMessage(User sender, User receiver , string message , RSAParameters receiverPublicKey)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
            
             sqlCommand.CommandText = ADD_MESSAGE;
             sqlCommand.Parameters.AddWithValue("@Senderid", sender.id);
             sqlCommand.Parameters.AddWithValue("@Receiverid", receiver.id);
-            sqlCommand.Parameters.AddWithValue("@Message", message);
+            sqlCommand.Parameters.AddWithValue("@Message", RsaEncryption.RsaEncrypt(message, receiverPublicKey));
+            sqlCommand.Parameters.AddWithValue("@Messageforsender", RsaEncryption.RsaEncrypt(message, myPublicKey));
 
             try
             {
@@ -158,7 +176,11 @@ namespace Chat_application_with_windows_forms.Entities
                     m.id = reader.GetInt64(0);
                     m.senderId = reader.GetInt64(1);
                     m.receiverId = reader.GetInt64(2);
-                    m.message = reader.GetString(3);
+
+                    string messageEncryptedForReceiver = reader.GetString(3);
+                    string messageEncryptedForSender = reader.GetString(7);
+
+
                     m.received = reader.GetBoolean(5);
                     m.seen = reader.GetBoolean(6);
                     dbRsult.Add(m);
