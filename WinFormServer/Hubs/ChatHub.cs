@@ -106,7 +106,7 @@ namespace Chat_application_with_windows_forms.Hubs
            
             try
             {
-                publicKeys.Add(phone, _publicKey);
+                publicKeys.Add(phone.Trim(), _publicKey);
                 Console.WriteLine("Adding publick key {0} ", _publicKey);
             }
             catch (Exception) { }
@@ -117,18 +117,21 @@ namespace Chat_application_with_windows_forms.Hubs
             Clients.All.populateContactBoxWithContacts();
         }
 
-        public void findPublicKey(string receiverPhoneNumber)
+        public void findPublicKey(string sender ,string receiverPhoneNumber)
         {
-
+            string con = "";
+            reversed_users.TryGetValue(sender.Trim(), out con);
             Console.WriteLine("Server: FInding public key for {0}", receiverPhoneNumber);
+            Console.WriteLine("Server: {0} , {1}", publicKeys.ElementAt(1).Key, publicKeys.ElementAt(1).Value);
             string receiverPkey = null;
 
-            publicKeys.TryGetValue(receiverPhoneNumber.Trim(), out receiverPkey);
+            publicKeys.TryGetValue(receiverPhoneNumber, out receiverPkey);
             Console.WriteLine("Server: Found public key for {0}", receiverPkey);
 
             if (receiverPkey != null)
             {
-                Clients.Caller.findPublicKey_forDb(receiverPkey);
+
+                Clients.Client(con).findPublicKey_forDb(receiverPkey);
             }
         }
         public void Send(string sender,string receiver,byte[] message , byte[] pkey , byte[] iv)

@@ -314,7 +314,7 @@ namespace Chat_application_with_windows_forms.Client
             string receiver = selectedUserToMessage.phoneNumber;
 
 
-            await _hubProxy.Invoke("findPublicKey",  receiver.Trim());
+            await _hubProxy.Invoke("findPublicKey",loggedUser.phoneNumber.Trim(),  receiver.Trim());
 
             string receiverPublicKey = this.receiverPublicKeyForDb;
             
