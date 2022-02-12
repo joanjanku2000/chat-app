@@ -183,6 +183,8 @@ namespace Chat_application_with_windows_forms.Utils
             Console.WriteLine("Sending message {0}", message.Trim());
 
             // TODO Encryption for the database
+
+
             Console.WriteLine("Client: Saving the message");
             repo.addMessageToGroup(group.id, logged.id, message);
             Console.WriteLine("Client: Saved the message");

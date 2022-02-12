@@ -111,7 +111,7 @@ namespace Chat_application_with_windows_forms.Client
             _hubProxy = _signalRConnection.CreateHubProxy("ChatHub");
             Console.WriteLine("Creating proxy");
 
-            _hubProxy.On<string, string, string>("AddMessage", (name, reciver, message) => AddMessage(name, reciver, message));
+            _hubProxy.On<string, string, byte[],byte[],byte[]>("AddMessage", (name, reciver, message, pkey, iv) => AddMessage(name, reciver, message,pkey,iv));
 
             _hubProxy.On("populateContactBoxWithContacts", () => this.Invoke(new Action(() => populateContactBoxWithContacts())));
 
@@ -121,7 +121,7 @@ namespace Chat_application_with_windows_forms.Client
 
             _hubProxy.On("populateGroupsList", () => populateGroupsList());
 
-
+            _hubProxy.On<byte[]>("RegisterPublicKeys_Single", (public_key) => RegisterPublicKeys_SingleUser(public_key));
 
             Console.WriteLine("MEthod mapping done");
 
@@ -177,24 +177,29 @@ namespace Chat_application_with_windows_forms.Client
         }
 
         int y = 2;
-        public void AddMessage(string sender, string receiver, string message)
+        public void AddMessage(string sender, string receiver, byte[] messageBytes , byte[] pkey , byte[] iv)
         {
+            string message = localDiffie.Decrypt(pkey, messageBytes, iv);
+           
+
+            Console.WriteLine("Got message {0}", message);
             try
             {
                 User senderUser = userRepo.findUserByPhoneNumber(sender);
                 User receiverUser = userRepo.findUserByPhoneNumber(receiver);
-                ChatPanel addedChat;
-                if (loggedUser.phoneNumber.Equals(sender))
+                ChatPanel addedChat = createActiveChat(senderUser.fullname(), message, y, sender, false, false);
+              /* if (loggedUser.phoneNumber.Equals(sender))
                 {
 
-                    addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver, true, false);
+                   addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver, true, false);
+                    //  AppendTextBox("You: " + "  " + message);
 
                 }
                 else
                 {
                     addedChat = createActiveChat(senderUser.fullname(), message, y, sender, false, false);
 
-                }
+                } */
                 y += 38;
                 Console.WriteLine("Chats length {0}", chats.Count);
 
@@ -204,7 +209,7 @@ namespace Chat_application_with_windows_forms.Client
                 {
                     if (loggedUser.phoneNumber.Trim().Equals(sender.Trim()))
                     {
-                        AppendTextBox("You: " + "  " + message);
+                      //  AppendTextBox("You: " + "  " + message);
                     }
                     else
                     {
@@ -216,11 +221,11 @@ namespace Chat_application_with_windows_forms.Client
                 }
 
 
-                if (loggedUser.phoneNumber.Trim().Equals(senderUser.phoneNumber.Trim()))
+             /*   if (loggedUser.phoneNumber.Trim().Equals(senderUser.phoneNumber.Trim()))
                 {
                     Entities.Message toBeSaved = messageRepo.sendMessage(senderUser, receiverUser, message);
 
-                }
+                } */
 
                 if (loggedUser.phoneNumber.Trim().Equals(receiverUser.phoneNumber.Trim()) && selectedUserToMessage != null && selectedUserToMessage.id.Equals(senderUser.id))
                 {
@@ -233,8 +238,6 @@ namespace Chat_application_with_windows_forms.Client
                                addedChat.BackColor = Color.AliceBlue;
                            }));
                 }
-
-
 
 
                 Console.WriteLine("Successfully wrote the message to the database");
@@ -284,10 +287,34 @@ namespace Chat_application_with_windows_forms.Client
             textBox1.AppendText(Environment.NewLine);
 
         }
-
-        private void button1_Click(object sender, EventArgs e)
+        public async Task getPublicKeysOfReceivers(string sender, string receiver)
         {
-            _hubProxy.Invoke("Send", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, message.Text);
+            await _hubProxy.Invoke("getUsersPublicKeys_Single", sender, receiver);
+        }
+           
+        /** Sends message */
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            string messageStr = message.Text;
+            string receiver = selectedUserToMessage.phoneNumber;
+
+            messageRepo.sendMessage(loggedUser, selectedUserToMessage, messageStr);
+
+            AppendTextBox("You: " + "  " + messageStr);
+
+            createActiveChat(selectedUserToMessage.fullname(), messageStr, y, receiver, true, false);
+
+            chatPanelPopulation();
+
+
+         
+
+            await getPublicKeysOfReceivers(loggedUser.phoneNumber.Trim(),receiver);
+
+            byte[] encryptedMessage = localDiffie.Encrypt(receiverPublicKey, messageStr);
+
+            await _hubProxy.Invoke("Send", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, encryptedMessage, localDiffie.PublicKey,localDiffie.IV);
+
             message.Text = "";
         }
 
@@ -715,5 +742,12 @@ namespace Chat_application_with_windows_forms.Client
             ReportsForm reports = new ReportsForm(groupRepository, loggedUser, userRepo);
             reports.ShowDialog();
         }
+
+        byte[] receiverPublicKey = null; 
+        void RegisterPublicKeys_SingleUser(byte[] receiverPublicKey)
+        {
+            this.receiverPublicKey = receiverPublicKey;
+        }
+
     }
 }

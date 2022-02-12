@@ -93,7 +93,7 @@ namespace Chat_application_with_windows_forms.Hubs
             Clients.All.populateContactBoxWithContacts();
         }
 
-        public void Send(string sender,string receiver,string message)
+        public void Send(string sender,string receiver,byte[] message , byte[] pkey , byte[] iv)
         {
             Console.WriteLine("Hub: User {0} is trying to send message to {1}", sender, receiver);
             Console.WriteLine("Hub: Logged users are ");
@@ -114,7 +114,7 @@ namespace Chat_application_with_windows_forms.Hubs
                 }
             }
             List<string> conIdsOfParticipants = new List<String>();
-            conIdsOfParticipants.Add(senderConId);
+            //conIdsOfParticipants.Add(senderConId);
             conIdsOfParticipants.Add(receiverConId);
             
             if (receiverConId!=null && senderConId != null)
@@ -122,12 +122,12 @@ namespace Chat_application_with_windows_forms.Hubs
                 Console.WriteLine("Found connection id of  {0}", receiverConId);
                // Clients.Client(receiverConId).AddMessage(sender, message);
                 // Clients.Client(senderConId).A
-                Clients.Clients(conIdsOfParticipants).AddMessage(sender,receiver, message);
+                Clients.Clients(conIdsOfParticipants).AddMessage(sender,receiver, message , pkey , iv);
                   
             } else
             {
                 Console.WriteLine("COuld not send message");
-                Clients.Client(senderConId).AddMessage(sender, receiver, message);
+                Clients.Client(senderConId).AddMessage(sender, receiver, message, pkey , iv);
             }
             
         }
@@ -218,6 +218,18 @@ namespace Chat_application_with_windows_forms.Hubs
 
                 Clients.Clients(connectionIds).RegisterPublicKeys(receiversPublicKeys);
             }
+        }
+
+        public void getUsersPublicKeys_Single(string senderphone, string receiver)
+        {
+            byte[] pkey = getPublicKeyOfUser(receiver.Trim());
+
+            string sender_con_id = null;
+            reversed_users.TryGetValue(senderphone.Trim(), out sender_con_id);
+            
+            if (sender_con_id != null && pkey != null)
+             Clients.Client(sender_con_id).RegisterPublicKeys_Single(pkey);
+
         }
 
         private byte[] getPublicKeyOfUser(string phone)
