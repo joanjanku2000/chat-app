@@ -65,7 +65,7 @@ namespace Chat_application_with_windows_forms.Utils
 
             // get public/private/key
 
-            this.groupPublicKey = File.ReadAllText("C:/Users/" + Environment.UserName + "/group_public_k_" + this.group.id);
+            this.groupPublicKey = group.publicKey;
             this.groupPRivateKey = File.ReadAllText("C:/Users/" + Environment.UserName + "/group_privat_K_" + this.group.id);
 
             _hubProxy.On<string, Dictionary<string, byte[]>, byte[], byte[],bool>("AddGroupChat",  (sender, message, publicKey, IV,flag)
@@ -74,11 +74,13 @@ namespace Chat_application_with_windows_forms.Utils
             _hubProxy.On<Dictionary<string, byte[]>>("RegisterPublicKeys", (publicKeys) => RegisterPublicKeys(publicKeys));
 
             _hubProxy.On<long, string>("DownloadGroupPrivateKey", (gid, key) => DownloadGroupPrivateKey(gid, key));
+                       
         }
 
         private void DownloadGroupPrivateKey(long gid, string pkey)
         {
-
+            RsaEncryption.writeGroupPrivateKeyToFile(gid, pkey);
+            Console.WriteLine("Successfully added private key of group to the system");
         }
         private Boolean userIsAllowedToEditGroup()
         {
@@ -97,13 +99,13 @@ namespace Chat_application_with_windows_forms.Utils
         {
             // TODO Validations
 
-            ContactsForm form = new ContactsForm(group, repo, contacts);
+            ContactsForm form = new ContactsForm(group, repo, contacts,this.groupPRivateKey,_hubProxy);
             form.ShowDialog();
             group = repo.getGroupById(group.id, logged);
             populateListView();
             totalCount_label.Text = group.participants.Count().ToString();
 
-            _hubProxy.
+           
 
             reFetchGroupsInGroupsParticipants(group.participants);
         }
@@ -201,10 +203,10 @@ namespace Chat_application_with_windows_forms.Utils
             Console.WriteLine("Sending message {0}", message.Trim());
 
             // TODO Encryption for the database
-
+            string encryptedMessageForDatabase = RsaEncryption.RsaEncrypt(message, RsaEncryption.getRsaParameter(group.publicKey));
 
             Console.WriteLine("Client: Saving the message");
-            repo.addMessageToGroup(group.id, logged.id, message);
+            repo.addMessageToGroup(group.id, logged.id, message, groupPublicKey);
             Console.WriteLine("Client: Saved the message");
 
 

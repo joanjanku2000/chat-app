@@ -68,7 +68,7 @@ namespace Chat_application_with_windows_forms.Hubs
             string existingCon = null;
 
             reversed_users.TryGetValue(phone.Trim(), out existingCon);
-            Console.WriteLine("Trying to login a user , found connectio id is {0}", existingCon);
+            Console.WriteLine("Server: Trying to login a user , found connection id is {0}", existingCon);
             users[Context.ConnectionId] = phone.Trim();
             ClientConnected?.Invoke(Context.ConnectionId);
 
@@ -85,9 +85,9 @@ namespace Chat_application_with_windows_forms.Hubs
             }
          
 
-            Console.WriteLine("Total number of logged users  now is {0} "
+            Console.WriteLine("Server: Total number of logged users  now is {0} "
                 , reversed_users.Count);
-            Console.WriteLine("Logged users are ");
+            Console.WriteLine("Server: Logged users are ");
             foreach (KeyValuePair<string, string> entry in reversed_users)
             {
                 Console.WriteLine(entry.Key + " : " + entry.Value);
@@ -110,14 +110,25 @@ namespace Chat_application_with_windows_forms.Hubs
             try
             {
                 publicKeys.Add(phone.Trim(), _publicKey);
-                Console.WriteLine("Adding publick key {0} ", _publicKey);
+                Console.WriteLine("Server: Adding publick key {0} ", _publicKey);
             }
             catch (Exception) { }
 
-            Console.WriteLine("Publick key size is {0} ", publicKeys.Count);
+            Console.WriteLine("Server: Publick key size is {0} ", publicKeys.Count);
 
             Console.WriteLine("Registered users public key and iv");
             Clients.All.populateContactBoxWithContacts();
+
+            Console.WriteLine("Server: Checking if user has any pending private key to add ");
+
+            foreach (KeyValuePair<UserGroup,string> key in privateKeys)
+            {
+                if (key.Key.phonenumber.Trim().Equals(phone.Trim()))
+                {
+                    Console.WriteLine("Server: Executing download operation on target {0} ", key.Key.phonenumber);
+                    onConnectedDownloadPrivateKeyOfGroup(phone, key.Key.groupid, key.Value);
+                }
+            }
         }
 
         public void findPublicKey(string sender ,string receiverPhoneNumber)
@@ -301,7 +312,7 @@ namespace Chat_application_with_windows_forms.Hubs
 
             if (con != null)
             {
-                Clients.User(con).SaveGroupPrivateKey(groupid, privateKey);
+                Clients.User(con).DownloadGroupPrivateKey(groupid, privateKey);
                 privateKeys.Remove(userGroup);
             } 
         }

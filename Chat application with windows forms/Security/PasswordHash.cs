@@ -193,6 +193,27 @@ namespace Chat_application_with_windows_forms.Security
 
             File.SetAttributes(filepath_public, FileAttributes.ReadOnly);
             File.SetAttributes(filepath_private, FileAttributes.ReadOnly);
+
+            File.SetAttributes(filepath_public, FileAttributes.Hidden);
+            File.SetAttributes(filepath_private, FileAttributes.Hidden);
+
+        }
+
+        static public void writeGroupPrivateKeyToFile(long groupid,string privateKey)
+        {
+            string priv_file_name = "group_privat_K_" + groupid;
+            string filepath_private = "C:/Users/"+Environment.UserName + "/" + priv_file_name;
+
+            if (File.Exists(filepath_private))
+            {
+                Console.WriteLine("File {0} exists, not overrding", filepath_private);
+                return;
+            }
+
+            File.WriteAllText(filepath_private, privateKey);
+
+            File.SetAttributes(filepath_private, FileAttributes.ReadOnly);
+            File.SetAttributes(filepath_private, FileAttributes.Hidden);
         }
 
         static public RSAParameters getRsaParameter(string key)
@@ -208,6 +229,13 @@ namespace Chat_application_with_windows_forms.Security
             return File.ReadAllText(location);
         }
 
+        static public string getGroupPrivateKey(long groupid)
+        {
+            string priv_file_name = "group_privat_K_" + groupid;
+            string filepath_private = "C:/Users/" + Environment.UserName + "/" + priv_file_name;
+
+            return File.ReadAllText(filepath_private);
+        }
         static public RSAParameters getPublicKey(string path, long id)
         {
             string pkey_file_name = "public_k_" + id;

@@ -371,6 +371,7 @@ namespace Chat_application_with_windows_forms.Client
                     ", logged user id {1}", foundUser.id, loggedUser.id);
                 Console.WriteLine("Now executing the insert query");
                 contactsRepo.RegisterContact(loggedUser.id, foundUser.id);
+              
                 populateContactBoxWithContacts();
                 return foundUser;
             }
@@ -708,7 +709,7 @@ namespace Chat_application_with_windows_forms.Client
 
         private void addMessageToGroup(long groupid, string message)
         {
-            groupRepository.addMessageToGroup(groupid, loggedUser.id, message);
+        //    groupRepository.addMessageToGroup(groupid, loggedUser.id, message,this.gr);
 
         }
 

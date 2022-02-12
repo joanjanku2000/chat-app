@@ -16,9 +16,10 @@ namespace Chat_application_with_windows_forms.Repository.group
     {
         private SqlConnection conn;
         private UserRepo userRepo;
+        private String privateKey;
 
-        private static string CREATE_GROUP = "insert into groupp(name,admin_id) values (@Name,@Adminid)";
-        private static string ADD_USER_TO_GROUP = "insert into user_group(group_id,user_id,public_communication_key) values (@Groupid,@Userid,@Publickey)";
+        private static string CREATE_GROUP = "insert into groupp(name,admin_id,public_communication_key) output INSERTED.ID values (@Name,@Adminid,@Publickey)";
+        private static string ADD_USER_TO_GROUP = "insert into user_group(group_id,user_id) values (@Groupid,@Userid)";
         private static string GET_USERS_OF_GROUP_PROCEDURE = "USERS_OF_GROUP";
         private static string GET_GROUPS_OF_USER_PROCEDURE = "GROUPS_OF_USER";
         private static string MESSAGES_OF_GROUP_PROCEDURE = "MESSAGES_OF_GROUP";
@@ -37,6 +38,7 @@ namespace Chat_application_with_windows_forms.Repository.group
         {
             conn = DatabaseConnection.getInstance();
             userRepo = new UserRepo();
+            
         }
 
         public void createGroup(long adminid, string groupName)
@@ -73,14 +75,15 @@ namespace Chat_application_with_windows_forms.Repository.group
             sqlCommand.Parameters.AddWithValue("@Adminid", adminid);
             sqlCommand.Parameters.AddWithValue("@Publickey", pubKeyString);
 
-            long id = (long) sqlCommand.ExecuteScalar();
 
             // create public private key pair to save
             // ky celes do te perdoret per te shkembyer te dhenat
-           
-            RsaEncryption.generatePublicKeyAndPrivateKeyAndSaveItToLocation_Group(id, "C:/Users/" + Environment.UserName,pubKeyString,privKeyString);
 
-            conn.Close();
+            long id = (long) sqlCommand.ExecuteScalar();
+            RsaEncryption.generatePublicKeyAndPrivateKeyAndSaveItToLocation_Group(id,
+                "C:/Users/" + Environment.UserName, pubKeyString, privKeyString);
+
+                conn.Close();
 
         }
         public void addUserToGroup(long groupid,long userid)
@@ -157,7 +160,7 @@ namespace Chat_application_with_windows_forms.Repository.group
                 {
                     long id = reader.GetInt64(0);
                     string groupName = reader.GetString(1);
-                    string publickey = reader.GetString(2);
+                    string publickey = reader.GetString(6);
 
                     groupsWrapperList
                         .Add(new Wrapper<Group>(reader.GetInt64(2), constructGroup(id, groupName, publickey)));
@@ -200,8 +203,11 @@ namespace Chat_application_with_windows_forms.Repository.group
                 {
                     long id = reader.GetInt64(0);
                     string message = reader.GetString(3);
+                    privateKey = RsaEncryption.getGroupPrivateKey(groupid);
+                    string decryptedMessage = RsaEncryption.RsaDecrypt(message, RsaEncryption.getRsaParameter(privateKey));
 
-                    messages.Add(new Wrapper<GroupMessage>(reader.GetInt64(1), new GroupMessage(id, message)));
+
+                    messages.Add(new Wrapper<GroupMessage>(reader.GetInt64(1), new GroupMessage(id, decryptedMessage)));
                 }
             }
             conn.Close();
@@ -221,7 +227,7 @@ namespace Chat_application_with_windows_forms.Repository.group
         }
 
 
-        public void addMessageToGroup(long groupid, long userid,string message)
+        public void addMessageToGroup(long groupid, long userid,string message,string publicKey)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
             if (conn.State == System.Data.ConnectionState.Closed)
@@ -230,7 +236,7 @@ namespace Chat_application_with_windows_forms.Repository.group
             sqlCommand.CommandText = ADD_MESSAGE_TO_GROUP;
             sqlCommand.Parameters.AddWithValue("@Senderid", userid);
             sqlCommand.Parameters.AddWithValue("@Groupid", groupid);
-            sqlCommand.Parameters.AddWithValue("@Message", message);
+            sqlCommand.Parameters.AddWithValue("@Message", RsaEncryption.RsaEncrypt(message,RsaEncryption.getRsaParameter(publicKey)));
             sqlCommand.ExecuteNonQuery();
 
             conn.Close();
