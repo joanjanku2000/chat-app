@@ -47,11 +47,12 @@ namespace Chat_application_with_windows_forms.Entities
 
         public MessageRepo (User loggedUser)
         {
+            this.loggedUser = loggedUser;
             conn = DatabaseConnection.getInstance();
             userRepo = new UserRepo();
-            myPrivateKey = RsaEncryption.getPrivateKey(filepathToAccessEncryptionData);
-            myPublicKey = RsaEncryption.getPublicKey(filepathToAccessEncryptionData);
-
+            myPrivateKey = RsaEncryption.getPrivateKey(filepathToAccessEncryptionData,loggedUser.id);
+            myPublicKey = RsaEncryption.getPublicKey(filepathToAccessEncryptionData,loggedUser.id);
+          
         }
         public void delete(long senderId,long receiverId)
         {
@@ -87,15 +88,21 @@ namespace Chat_application_with_windows_forms.Entities
                     m.id = reader.GetInt64(0);
                     m.senderId = reader.GetInt64(1);
                     m.receiverId = reader.GetInt64(2);
-                    
+                   
                     string messageEncryptedForReceiver = reader.GetString(3);
                     string messageEncryptedForSender = reader.GetString(7);
 
+                    if (m.senderId == loggedUser.id)
+                    {
+                        m.message = RsaEncryption.RsaDecrypt(messageEncryptedForSender, myPrivateKey);
+                    } else
+                    {
+                        m.message = RsaEncryption.RsaDecrypt(messageEncryptedForReceiver, myPrivateKey);
+                    }
+
                     m.received = reader.GetBoolean(5);
                     m.seen = reader.GetBoolean(6);
-
-                   
-
+                
                 }
             }
 
@@ -117,10 +124,12 @@ namespace Chat_application_with_windows_forms.Entities
                 throw new BadRequestException("Not found message");
             }
         }
-        public Message sendMessage(User sender, User receiver , string message , RSAParameters receiverPublicKey)
+        public Message sendMessage(User sender, User receiver , string message , string pkey)
         {
             SqlCommand sqlCommand = conn.CreateCommand();
-           
+
+            RSAParameters receiverPublicKey = RsaEncryption.getRsaParameter(pkey);
+
             sqlCommand.CommandText = ADD_MESSAGE;
             sqlCommand.Parameters.AddWithValue("@Senderid", sender.id);
             sqlCommand.Parameters.AddWithValue("@Receiverid", receiver.id);
@@ -180,6 +189,14 @@ namespace Chat_application_with_windows_forms.Entities
                     string messageEncryptedForReceiver = reader.GetString(3);
                     string messageEncryptedForSender = reader.GetString(7);
 
+                    if (m.senderId == loggedUser.id)
+                    {
+                        m.message = RsaEncryption.RsaDecrypt(messageEncryptedForSender, myPrivateKey);
+                    }
+                    else
+                    {
+                        m.message = RsaEncryption.RsaDecrypt(messageEncryptedForReceiver, myPrivateKey);
+                    }
 
                     m.received = reader.GetBoolean(5);
                     m.seen = reader.GetBoolean(6);

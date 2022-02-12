@@ -124,19 +124,55 @@ namespace Chat_application_with_windows_forms.Security
 
     class RsaEncryption
     {
-        
+        static public byte[] Encryption(byte[] Data, RSAParameters RSAKey, bool DoOAEPPadding)
+        {
+            try
+            {
+                byte[] encryptedData;
+                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+                {
+                    RSA.ImportParameters(RSAKey);
+                    encryptedData = RSA.Encrypt(Data, DoOAEPPadding);
+                }
+                return encryptedData;
+            }
+            catch (CryptographicException e)
+            {
+                Console.WriteLine(e.Message);
+                return null;
+            }
+        }
 
-        static public void generatePublicKeyAndPrivateKeyAndSaveItToLocation( string location)
+        static public byte[] Decryption(byte[] Data, RSAParameters RSAKey, bool DoOAEPPadding)
+        {
+            try
+            {
+                byte[] decryptedData;
+                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+                {
+                    RSA.ImportParameters(RSAKey);
+                    decryptedData = RSA.Decrypt(Data, DoOAEPPadding);
+                }
+                return decryptedData;
+            }
+            catch (CryptographicException e)
+            {
+                Console.WriteLine(e.ToString());
+                return null;
+            }
+        }
+
+        static public void generatePublicKeyAndPrivateKeyAndSaveItToLocation(long userID, string location)
         {
 
-            string pkey_file_name = "public_k";
-            string priv_file_name = "privat_K";
+            string pkey_file_name = "public_k_" + userID;
+            string priv_file_name = "privat_K_" + userID;
 
             string filepath_public = location + "/" + pkey_file_name;
             string filepath_private = location + "/" + priv_file_name;
 
             if (File.Exists(filepath_public)) { 
-                Console.WriteLine("File {} exists, not overrding", filepath_public);
+                Console.WriteLine("File {0} exists, not overrding", filepath_public);
                 return;
             }
 
@@ -171,7 +207,7 @@ namespace Chat_application_with_windows_forms.Security
             File.SetAttributes(filepath_private, FileAttributes.ReadOnly);
         }
 
-        static RSAParameters getRsaParameter(string key)
+        static public RSAParameters getRsaParameter(string key)
         { 
             var sr = new System.IO.StringReader(key);
             var xs = new System.Xml.Serialization.XmlSerializer(typeof(RSAParameters));
@@ -179,27 +215,27 @@ namespace Chat_application_with_windows_forms.Security
         }
 
 
-        static string readKeyFromFile(string location)
+        static public string readKeyFromFile(string location)
         {
             return File.ReadAllText(location);
         }
 
-        static public RSAParameters getPublicKey(string path)
+        static public RSAParameters getPublicKey(string path, long id)
         {
-            string pkey_file_name = "public_k";
+            string pkey_file_name = "public_k_" + id;
             string filepath_public = path + "/" + pkey_file_name;
 
             return getRsaParameter(readKeyFromFile(filepath_public));
         }
 
-        static public RSAParameters getPrivateKey (string path)
+        static public RSAParameters getPrivateKey(string path, long id)
         {
-            string priv_file_name = "privat_K" ;
+
+            string priv_file_name = "privat_K_" + id;
             string filepath_private = path + "/" + priv_file_name;
 
             return getRsaParameter(readKeyFromFile(filepath_private));
         }
-
         static public string RsaEncrypt(string message, RSAParameters publicKey)
         {
             var csp = new RSACryptoServiceProvider();

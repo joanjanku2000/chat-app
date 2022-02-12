@@ -100,7 +100,7 @@ namespace Chat_application_with_windows_forms.Login
                     string filepathToSaveEncryptionData = "C:/Users/" + userName;
 
                     Console.WriteLine("Writing encryption keys to filepath {0} ", filepathToSaveEncryptionData);
-                    RsaEncryption.generatePublicKeyAndPrivateKeyAndSaveItToLocation(filepathToSaveEncryptionData);
+                    RsaEncryption.generatePublicKeyAndPrivateKeyAndSaveItToLocation(loggedUser.id,filepathToSaveEncryptionData);
 
                     return loggedUser;
                 } else

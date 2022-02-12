@@ -19,8 +19,12 @@ namespace Chat_application_with_windows_forms.Hubs
 
         /** <PhoneNumber , Public Key> */
         static Dictionary<string, byte[]> user_public_key = new Dictionary<string, byte[]>();
+
         /** <PhoneNumber , IV> */
         static Dictionary<string, byte[]> user_IV = new Dictionary<string, byte[]>();
+
+        /** <PhoneNumber , Database Public Key */
+        static Dictionary<string, string> publicKeys = new Dictionary<string, string>();
 
         public static event ClientConnectionEventHandler ClientConnected;
 
@@ -56,7 +60,7 @@ namespace Chat_application_with_windows_forms.Hubs
             users.Remove(con);
             Console.WriteLine("User {0} is now logged out", phone);
         }
-        public void setPhoneNumber(string phone,byte[] publickey, byte[] iv)
+        public void setPhoneNumber(string phone,byte[] publickey, byte[] iv, string _publicKey)
         {
             string existingCon = null;
 
@@ -86,13 +90,47 @@ namespace Chat_application_with_windows_forms.Hubs
                 Console.WriteLine(entry.Key + " : " + entry.Value);
             }
 
+            try
+            {
+                user_public_key.Add(phone, publickey);
+                user_IV.Add(phone, iv);
+            }
+            catch (Exception)
+            {
+                user_IV.Remove(phone);
+                user_public_key.Remove(phone);
 
-            user_public_key.Add(phone, publickey);
-            user_IV.Add(phone, iv);
+                user_public_key.Add(phone, publickey);
+                user_IV.Add(phone, iv);
+            }
+           
+            try
+            {
+                publicKeys.Add(phone, _publicKey);
+                Console.WriteLine("Adding publick key {0} ", _publicKey);
+            }
+            catch (Exception) { }
+
+            Console.WriteLine("Publick key size is {0} ", publicKeys.Count);
+
             Console.WriteLine("Registered users public key and iv");
             Clients.All.populateContactBoxWithContacts();
         }
 
+        public void findPublicKey(string receiverPhoneNumber)
+        {
+
+            Console.WriteLine("Server: FInding public key for {0}", receiverPhoneNumber);
+            string receiverPkey = null;
+
+            publicKeys.TryGetValue(receiverPhoneNumber.Trim(), out receiverPkey);
+            Console.WriteLine("Server: Found public key for {0}", receiverPkey);
+
+            if (receiverPkey != null)
+            {
+                Clients.Caller.findPublicKey_forDb(receiverPkey);
+            }
+        }
         public void Send(string sender,string receiver,byte[] message , byte[] pkey , byte[] iv)
         {
             Console.WriteLine("Hub: User {0} is trying to send message to {1}", sender, receiver);
@@ -243,9 +281,6 @@ namespace Chat_application_with_windows_forms.Hubs
             }
             return null;
         }
-        public void refreshChatOfUserWithUser(string sender,string receiver)
-        {
 
-        }
     }
 }

@@ -58,7 +58,7 @@ namespace Chat_application_with_windows_forms.Client
             phone_number.Text = loggedUser.phoneNumber;
             contactsRepo = new ContactsRepo();
             userRepo = new UserRepo();
-            messageRepo = new MessageRepo();
+            messageRepo = new MessageRepo(loggedUser);
             userChatsFromDatabase = messageRepo.findChatsOfUser(loggedUser.id);
             groupRepository = new GroupRepository();
             groupsOfUser = new List<Group>();
@@ -110,8 +110,10 @@ namespace Chat_application_with_windows_forms.Client
         {
 
             Console.WriteLine("Starting signalRConnection on link");
+
             _signalRConnection = new HubConnection("http://localhost:8080/signalr");
             Console.WriteLine("Initialized hub connection");
+
             _hubProxy = _signalRConnection.CreateHubProxy("ChatHub");
             Console.WriteLine("Creating proxy");
 
@@ -127,6 +129,8 @@ namespace Chat_application_with_windows_forms.Client
 
             _hubProxy.On<byte[]>("RegisterPublicKeys_Single", (public_key) => RegisterPublicKeys_SingleUser(public_key));
 
+            _hubProxy.On<string>("findPublicKey_forDb", (pkey) => findPublicKey_forDb(pkey));
+
             Console.WriteLine("MEthod mapping done");
 
             try
@@ -140,7 +144,7 @@ namespace Chat_application_with_windows_forms.Client
                 Console.WriteLine(e.Message);
             }
 
-            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber,localDiffie.PublicKey,localDiffie.IV);
+            await _hubProxy.Invoke("setPhoneNumber", loggedUser.phoneNumber,localDiffie.PublicKey,localDiffie.IV,RsaEncryption.readKeyFromFile("C:/Users/" + Environment.UserName + "/"+ "public_k_" + loggedUser.id));
 
             Console.WriteLine("Connection established");
         }
@@ -295,27 +299,38 @@ namespace Chat_application_with_windows_forms.Client
         {
             await _hubProxy.Invoke("getUsersPublicKeys_Single", sender, receiver);
         }
-           
+
+        private string receiverPublicKeyForDb = null;
+
+        public void findPublicKey_forDb(string pkey)
+        {
+            Console.WriteLine("Public key comming is {0}", pkey);
+            this.receiverPublicKeyForDb = pkey;
+        }
         /** Sends message */
         private async void button1_Click(object sender, EventArgs e)
         {
             string messageStr = message.Text;
             string receiver = selectedUserToMessage.phoneNumber;
 
-            messageRepo.sendMessage(loggedUser, selectedUserToMessage, messageStr);
+
+            await _hubProxy.Invoke("findPublicKey",  receiver.Trim());
+
+            string receiverPublicKey = this.receiverPublicKeyForDb;
+            
+            Console.WriteLine("Receiver pkey {0}", receiverPublicKey);
+
+            messageRepo.sendMessage(loggedUser, selectedUserToMessage, messageStr , receiverPublicKey);
 
             AppendTextBox("You: " + "  " + messageStr);
 
             createActiveChat(selectedUserToMessage.fullname(), messageStr, y, receiver, true, false);
 
-            chatPanelPopulation();
-
-
-         
+            chatPanelPopulation();  
 
             await getPublicKeysOfReceivers(loggedUser.phoneNumber.Trim(),receiver);
 
-            byte[] encryptedMessage = localDiffie.Encrypt(receiverPublicKey, messageStr);
+            byte[] encryptedMessage = localDiffie.Encrypt(this.receiverPublicKey, messageStr);
 
             await _hubProxy.Invoke("Send", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, encryptedMessage, localDiffie.PublicKey,localDiffie.IV);
 
