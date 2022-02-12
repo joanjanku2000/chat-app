@@ -124,43 +124,7 @@ namespace Chat_application_with_windows_forms.Security
 
     class RsaEncryption
     {
-        static public byte[] Encryption(byte[] Data, RSAParameters RSAKey, bool DoOAEPPadding)
-        {
-            try
-            {
-                byte[] encryptedData;
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-                    RSA.ImportParameters(RSAKey);
-                    encryptedData = RSA.Encrypt(Data, DoOAEPPadding);
-                }
-                return encryptedData;
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
-        }
-
-        static public byte[] Decryption(byte[] Data, RSAParameters RSAKey, bool DoOAEPPadding)
-        {
-            try
-            {
-                byte[] decryptedData;
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-                    RSA.ImportParameters(RSAKey);
-                    decryptedData = RSA.Decrypt(Data, DoOAEPPadding);
-                }
-                return decryptedData;
-            }
-            catch (CryptographicException e)
-            {
-                Console.WriteLine(e.ToString());
-                return null;
-            }
-        }
+        
 
         static public void generatePublicKeyAndPrivateKeyAndSaveItToLocation(long userID, string location)
         {
@@ -203,6 +167,30 @@ namespace Chat_application_with_windows_forms.Security
             File.WriteAllText(filepath_private, privKeyString);
 
          
+            File.SetAttributes(filepath_public, FileAttributes.ReadOnly);
+            File.SetAttributes(filepath_private, FileAttributes.ReadOnly);
+        }
+
+        static public void generatePublicKeyAndPrivateKeyAndSaveItToLocation_Group(long groupid, string location, string pubKeyString,string privKeyString)
+        {
+
+            string pkey_file_name = "group_public_k_" + groupid;
+            string priv_file_name = "group_privat_K_" + groupid;
+
+            string filepath_public = location + "/" + pkey_file_name;
+            string filepath_private = location + "/" + priv_file_name;
+
+            if (File.Exists(filepath_public))
+            {
+                Console.WriteLine("File {0} exists, not overrding", filepath_public);
+                return;
+            }
+
+
+            File.WriteAllText(filepath_public, pubKeyString);
+            File.WriteAllText(filepath_private, privKeyString);
+
+
             File.SetAttributes(filepath_public, FileAttributes.ReadOnly);
             File.SetAttributes(filepath_private, FileAttributes.ReadOnly);
         }

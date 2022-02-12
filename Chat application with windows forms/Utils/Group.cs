@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,9 @@ namespace Chat_application_with_windows_forms.Utils
         private IHubProxy _hubProxy;
         private Dictionary<string, byte[]> receiversPublicKeys;
         private DiffieHellman localDiffie;
+
+        private string groupPublicKey;
+        private string groupPRivateKey;
 
         public GroupInfoForm(Group g, GroupRepository gr,List<User> co,User logged, HubConnection con , IHubProxy proxy,DiffieHellman localdiffie)
         {
@@ -59,12 +63,23 @@ namespace Chat_application_with_windows_forms.Utils
             fillChatBoxWithMessagesFromTheDatabase();
 
 
+            // get public/private/key
+
+            this.groupPublicKey = File.ReadAllText("C:/Users/" + Environment.UserName + "/group_public_k_" + this.group.id);
+            this.groupPRivateKey = File.ReadAllText("C:/Users/" + Environment.UserName + "/group_privat_K_" + this.group.id);
+
             _hubProxy.On<string, Dictionary<string, byte[]>, byte[], byte[],bool>("AddGroupChat",  (sender, message, publicKey, IV,flag)
                            =>  Invoke(new Action(() => addGroupChat(sender, message, publicKey, IV,flag))));
 
             _hubProxy.On<Dictionary<string, byte[]>>("RegisterPublicKeys", (publicKeys) => RegisterPublicKeys(publicKeys));
+
+            _hubProxy.On<long, string>("DownloadGroupPrivateKey", (gid, key) => DownloadGroupPrivateKey(gid, key));
         }
 
+        private void DownloadGroupPrivateKey(long gid, string pkey)
+        {
+
+        }
         private Boolean userIsAllowedToEditGroup()
         {
             return group.admin.id == logged.id;
@@ -81,11 +96,14 @@ namespace Chat_application_with_windows_forms.Utils
         private void button1_Click(object sender, EventArgs e)
         {
             // TODO Validations
+
             ContactsForm form = new ContactsForm(group, repo, contacts);
             form.ShowDialog();
             group = repo.getGroupById(group.id, logged);
             populateListView();
             totalCount_label.Text = group.participants.Count().ToString();
+
+            _hubProxy.
 
             reFetchGroupsInGroupsParticipants(group.participants);
         }
@@ -308,6 +326,11 @@ namespace Chat_application_with_windows_forms.Utils
                 }
                 message_Box.Clear();
             }
+        }
+
+        private void GroupInfoForm_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

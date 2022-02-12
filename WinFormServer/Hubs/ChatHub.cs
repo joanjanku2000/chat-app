@@ -26,6 +26,9 @@ namespace Chat_application_with_windows_forms.Hubs
         /** <PhoneNumber , Database Public Key */
         static Dictionary<string, string> publicKeys = new Dictionary<string, string>();
 
+        /** <UserGroup , GroupPrivateKey > Pair wil be removed when user gets back online > */
+        static Dictionary<UserGroup,string> privateKeys = new Dictionary<UserGroup, string>();
+
         public static event ClientConnectionEventHandler ClientConnected;
 
         /**
@@ -285,5 +288,55 @@ namespace Chat_application_with_windows_forms.Hubs
             return null;
         }
 
+        public void _AddUserGroupPrivateKey(long groupid, string userphonenumber , string privateKey)
+        {
+            UserGroup userGroup = new UserGroup();
+            userGroup.groupid = groupid;
+            userGroup.phonenumber = userphonenumber;
+
+            privateKeys.Add(userGroup, privateKey);
+
+            string con = null;
+            reversed_users.TryGetValue(userphonenumber, out con);
+
+            if (con != null)
+            {
+                Clients.User(con).SaveGroupPrivateKey(groupid, privateKey);
+                privateKeys.Remove(userGroup);
+            } 
+        }
+
+        private void onConnectedDownloadPrivateKeyOfGroup(string target, long groupid, string privatekey)
+        {
+            string con = null;
+            reversed_users.TryGetValue(target, out con);
+
+            if (con != null)
+            {
+                Clients.Client(con).DownloadGroupPrivateKey(groupid, privatekey);
+            }
+
+        }
+        private void removeFromPrivateKey(UserGroup userGroup)
+        {
+            int i = 0;
+            foreach (KeyValuePair<UserGroup,string> k in privateKeys)
+            {
+                if (k.Key.groupid == userGroup.groupid && k.Key.phonenumber.Trim() == userGroup.phonenumber.Trim())
+                {
+                    break;
+                } i++;
+            }
+            UserGroup u = privateKeys.ElementAt(i).Key;
+
+            privateKeys.Remove(u);
+        }
+
     }
+
+    class UserGroup {
+        public long groupid;
+        public string phonenumber;
+    }
+
 }

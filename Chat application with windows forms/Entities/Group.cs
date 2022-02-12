@@ -14,6 +14,8 @@ namespace Chat_application_with_windows_forms.Entities
         public List<User> participants;
         public List<GroupMessage> messages;
 
+        public string publicKey;
+
         public Group(long id, string name,User admin, List<User> participants, List<GroupMessage> messages)
         {
             this.id = id;

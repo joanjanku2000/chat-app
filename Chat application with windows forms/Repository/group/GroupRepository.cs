@@ -1,9 +1,12 @@
 ﻿using Chat_application_with_windows_forms.Entities;
 using Chat_application_with_windows_forms.Repository.user;
+using Chat_application_with_windows_forms.Security;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +18,7 @@ namespace Chat_application_with_windows_forms.Repository.group
         private UserRepo userRepo;
 
         private static string CREATE_GROUP = "insert into groupp(name,admin_id) values (@Name,@Adminid)";
-        private static string ADD_USER_TO_GROUP = "insert into user_group(group_id,user_id) values (@Groupid,@Userid)";
+        private static string ADD_USER_TO_GROUP = "insert into user_group(group_id,user_id,public_communication_key) values (@Groupid,@Userid,@Publickey)";
         private static string GET_USERS_OF_GROUP_PROCEDURE = "USERS_OF_GROUP";
         private static string GET_GROUPS_OF_USER_PROCEDURE = "GROUPS_OF_USER";
         private static string MESSAGES_OF_GROUP_PROCEDURE = "MESSAGES_OF_GROUP";
@@ -38,6 +41,29 @@ namespace Chat_application_with_windows_forms.Repository.group
 
         public void createGroup(long adminid, string groupName)
         {
+
+            var csp = new RSACryptoServiceProvider(2048);
+            var privKey = csp.ExportParameters(true);
+            var pubKey = csp.ExportParameters(false);
+
+            string pubKeyString;
+            string privKeyString;
+
+            {
+                //we need some buffer
+                var sw = new System.IO.StringWriter();
+                var pw = new StringWriter();
+                //we need a serializer
+                var xs = new System.Xml.Serialization.XmlSerializer(typeof(RSAParameters));
+                //serialize the key into the stream
+                xs.Serialize(sw, pubKey);
+                xs.Serialize(pw, privKey);
+                //get the string from the stream
+                pubKeyString = sw.ToString();
+                privKeyString = pw.ToString();
+            }
+
+
             SqlCommand sqlCommand = conn.CreateCommand();
             if (conn.State == System.Data.ConnectionState.Closed)
                 conn.Open();
@@ -45,8 +71,14 @@ namespace Chat_application_with_windows_forms.Repository.group
             sqlCommand.CommandText = CREATE_GROUP;
             sqlCommand.Parameters.AddWithValue("@Name", groupName);
             sqlCommand.Parameters.AddWithValue("@Adminid", adminid);
+            sqlCommand.Parameters.AddWithValue("@Publickey", pubKeyString);
 
-            sqlCommand.ExecuteNonQuery();
+            long id = (long) sqlCommand.ExecuteScalar();
+
+            // create public private key pair to save
+            // ky celes do te perdoret per te shkembyer te dhenat
+           
+            RsaEncryption.generatePublicKeyAndPrivateKeyAndSaveItToLocation_Group(id, "C:/Users/" + Environment.UserName,pubKeyString,privKeyString);
 
             conn.Close();
 
@@ -125,9 +157,10 @@ namespace Chat_application_with_windows_forms.Repository.group
                 {
                     long id = reader.GetInt64(0);
                     string groupName = reader.GetString(1);
+                    string publickey = reader.GetString(2);
 
                     groupsWrapperList
-                        .Add(new Wrapper<Group>(reader.GetInt64(2), constructGroup(id, groupName)));
+                        .Add(new Wrapper<Group>(reader.GetInt64(2), constructGroup(id, groupName, publickey)));
                     
                 }
             }
@@ -297,12 +330,12 @@ namespace Chat_application_with_windows_forms.Repository.group
 
             conn.Close();
         }
-        private static Group constructGroup(long id, string groupName)
+        private static Group constructGroup(long id, string groupName,string publickey)
         {
             Group group = new Group();
             group.id = id;
             group.name = groupName;
-
+            group.publicKey = publickey;
             return group;
         }
 

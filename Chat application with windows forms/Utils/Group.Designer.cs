@@ -239,6 +239,7 @@ namespace Chat_application_with_windows_forms.Utils
             this.Controls.Add(this.name);
             this.Name = "GroupInfoForm";
             this.Text = "Group";
+            this.Load += new System.EventHandler(this.GroupInfoForm_Load);
             this.users_GBOX.ResumeLayout(false);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();

@@ -313,7 +313,6 @@ namespace Chat_application_with_windows_forms.Client
             string messageStr = message.Text;
             string receiver = selectedUserToMessage.phoneNumber;
 
-
             await _hubProxy.Invoke("findPublicKey",loggedUser.phoneNumber.Trim(),  receiver.Trim());
 
             string receiverPublicKey = this.receiverPublicKeyForDb;
@@ -322,7 +321,7 @@ namespace Chat_application_with_windows_forms.Client
 
             messageRepo.sendMessage(loggedUser, selectedUserToMessage, messageStr , receiverPublicKey);
 
-            AppendTextBox("You: " + "  " + messageStr);
+            AppendTextBox("You: " + "  " + messageStr); 
 
             createActiveChat(selectedUserToMessage.fullname(), messageStr, y, receiver, true, false);
 
