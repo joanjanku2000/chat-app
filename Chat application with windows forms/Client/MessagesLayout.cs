@@ -310,6 +310,7 @@ namespace Chat_application_with_windows_forms.Client
             Console.WriteLine("Public key comming is {0}", pkey);
             this.receiverPublicKeyForDb = pkey;
         }
+
         /** Sends message */
         private async void button1_Click(object sender, EventArgs e)
         {

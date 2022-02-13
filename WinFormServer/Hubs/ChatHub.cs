@@ -136,7 +136,7 @@ namespace Chat_application_with_windows_forms.Hubs
             string con = "";
             reversed_users.TryGetValue(sender.Trim(), out con);
             Console.WriteLine("Server: FInding public key for {0}", receiverPhoneNumber);
-            Console.WriteLine("Server: {0} , {1}", publicKeys.ElementAt(1).Key, publicKeys.ElementAt(1).Value);
+            //Console.WriteLine("Server: {0} , {1}", publicKeys.ElementAt(1).Key, publicKeys.ElementAt(1).Value);
             string receiverPkey = null;
 
             publicKeys.TryGetValue(receiverPhoneNumber, out receiverPkey);
@@ -182,7 +182,7 @@ namespace Chat_application_with_windows_forms.Hubs
             } else
             {
                 Console.WriteLine("COuld not send message");
-                Clients.Client(senderConId).AddMessage(sender, receiver, message, pkey , iv);
+            //    Clients.Client(senderConId).AddMessage(sender, receiver, message, pkey , iv);
             }
             
         }
