@@ -202,7 +202,7 @@ namespace Chat_application_with_windows_forms.Utils
             Console.WriteLine("Client: Found receivers");
             Console.WriteLine("Sending message {0}", message.Trim());
 
-            // TODO Encryption for the database
+            // message encryption for db
             string encryptedMessageForDatabase = RsaEncryption.RsaEncrypt(message, RsaEncryption.getRsaParameter(group.publicKey));
 
             Console.WriteLine("Client: Saving the message");
@@ -210,6 +210,7 @@ namespace Chat_application_with_windows_forms.Utils
             Console.WriteLine("Client: Saved the message");
 
 
+            // real time message encryption
             await getPublicKeysOfReceivers(logged.phoneNumber.Trim(), receivers.Select(u => u.phoneNumber.Trim()).ToList());
 
             Dictionary<string,byte[]> receiversPublicKeys = this.receiversPublicKeys;

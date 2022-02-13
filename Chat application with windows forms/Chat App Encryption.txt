@@ -1,0 +1,22 @@
+1) ONE TO ONE
+Kemi dy lloje enkriptimesh.
+	1) Komunikimi real time - celesat publike shkembehen me Diffie Hellman. Enkriptim/Dekriptim simetrik - AES
+	2) Gjurma ne databaze - Kriptografi Asimetrike. Kur perdoruesi logohet per here te pare krijohet nje 
+	celes publik dhe privat per te, ruhet ne C/Users/emriUserit sipas nje formati te caktuar emri. (percaktuar ne kod)
+	Ne databaze ruhen 2 kopje te te njejtit mesazh, njera e enkriptuar me celesin publik te marresit dhe tjetra me te derguesit
+	ne menyre te tille qe derguesi te dekriptoje mesazhin me celesin e tij privat dhe marresi gjithashtu. Celesi publik i marresit
+	merret para se te dergohet mesazhi nga nje metode ne server. (celesi publik eshte ruajtur ne buffer ne server kur useri eshte loguar)
+	dhe nqs serveri bie down, kur useri te logohet perseri do shtohet nqs mungon (useri e ka ne local machine)
+2) Group Chat
+	1) Komunikimi real time - celesat publike shkembehen me Diffie Hellman. Enkriptim/Dekriptim simetrik - AES, por
+	per shume marres, enkriptohen aq mesazhe sa marres jane online. Dhe mesazhet shkojne drejt tyre. Dekriptohen me celesin publik dhe IV
+	te inicializuar qe ne fillim te sesionit (kerkohet cili mesazh eshte per ta, shkembehen me dictionary (key-phonenumber)).
+	2) Gjurma ne databaze - Kriptografi Asimetrike. Kur grupi krijohet i percaktohet nje celes publik dhe privat. Celesi publik ruhet ne db e grupit.
+	Por mesazhet mund te dekriptohen vetem nga celesi privat i grupit. Kur nje person shtohet ne grup, i vihet ne dispozicion celesi privat.
+	Nqs useri eshte online shkon vetem 1 here drejt perdoruesit te shtuar, ruhet ne nje buffer, dhe hiqet sapo useri e shkarkon.
+	Nqs useri nuk eshte online, ruhet si key value pair (phone number,group,private key) dhe sapo useri vjen online, kontrollohet nqs ka
+	dicka ne buffer per te, dhe nqs po, ruhet ne makinen e perdoruesit _grop_priv_key_ID si file readonly me celesin privat te grupit dhe hiqet
+	nga serveri. Risku: 
+		1) man in the middle (por vetem per 1 komunikim, celesi privat nuk shkembehet cdo here. Permiresim: possibly diffie hellman)
+		2) Marrja e makines server nga hackerat. (kesaj skemi c'i bejme) Dhe ne kete rast mund te dekriptohen vetem ato mesazhe	
+		grupesh te cilat kane nje priv key ne server(mundesia qe te ndodhe shume e ulet)
