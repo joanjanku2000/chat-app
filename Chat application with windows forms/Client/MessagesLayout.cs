@@ -832,8 +832,19 @@ namespace Chat_application_with_windows_forms.Client
         private void download_button_Click(object sender, EventArgs e)
         {
             // get the file and download it
+            string pathToSave = "C:/Users/" + Environment.UserName + "/Downloads";
+            if (chat_files_ListView.SelectedItems.Count == 0)
+            {
+                return;
+            }
 
+            FileListViewItem fileListView =  (FileListViewItem) chat_files_ListView.SelectedItems[0];
 
+            string filename = fileListView.file.name;
+            pathToSave += "/"+filename;
+
+            File.WriteAllBytes(pathToSave, fileListView.file.file);
+            MessageB.INFORMATION(filename+" u shkarkua me sukses ne folderin Downloads", "SUKSES");
         }
     }
 }
