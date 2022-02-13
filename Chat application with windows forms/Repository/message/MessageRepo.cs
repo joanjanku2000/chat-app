@@ -45,6 +45,12 @@ namespace Chat_application_with_windows_forms.Entities
           "delete from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) " +
             "or (sender_id = @Receiverid and receiver_id = @Senderid) ";
 
+        private static string INSERT_FILE = "insert into file_chat_user(sender_id,receiver_id,attachement,file_Namee) values(@Senderid,@Receiverid,@Attachment,@Filename);"
+            ;
+        private static string FIND_FILES_OF_USERS =
+        "select * from file_chat_user where (sender_id = @Senderid and receiver_id = @Receiverid) " +
+            "or (sender_id = @Receiverid and receiver_id = @Senderid) order by id";
+        private static string RETRIEVE_FILE = "select attachment from file_chat_user where id = @Id";
         public MessageRepo (User loggedUser)
         {
             this.loggedUser = loggedUser;
@@ -53,6 +59,73 @@ namespace Chat_application_with_windows_forms.Entities
             myPrivateKey = RsaEncryption.getPrivateKey(filepathToAccessEncryptionData,loggedUser.id);
             myPublicKey = RsaEncryption.getPublicKey(filepathToAccessEncryptionData,loggedUser.id);
           
+        }
+        public void insertFile(long senderid, long receiverid, string filename, byte[] attachment)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            sqlCommand.CommandText = INSERT_FILE;
+            sqlCommand.Parameters.AddWithValue("@Senderid", senderid);
+            sqlCommand.Parameters.AddWithValue("@Receiverid", receiverid);
+            sqlCommand.Parameters.AddWithValue("@Filename", filename);
+            sqlCommand.Parameters.AddWithValue("@Attachment", attachment);
+            
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.ExecuteNonQuery();
+
+            conn.Close();
+        }
+
+        public List<MessageFile> getFiles(long senderid, long receiverid)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = FIND_FILES_OF_USERS;
+            sqlCommand.Parameters.AddWithValue("@Senderid", senderid);
+            sqlCommand.Parameters.AddWithValue("@Receiverid", receiverid);
+
+            List<MessageFile> messageFile = new List<MessageFile>();
+
+            using (SqlDataReader reader = sqlCommand.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    MessageFile m = new MessageFile();
+
+                    m.id = reader.GetInt64(0);
+                    m.sender = reader.GetInt64(1);
+                    m.receiver = reader.GetInt64(2);
+                    m.name = reader.GetString(4);
+
+                    messageFile.Add(m);
+                }
+            }
+
+            conn.Close();
+
+            return messageFile;
+        }
+
+        public byte[] retrieveFile(long id)
+        {
+            SqlCommand sqlCommand = conn.CreateCommand();
+
+            if (conn.State == System.Data.ConnectionState.Closed)
+                conn.Open();
+
+            sqlCommand.CommandText = RETRIEVE_FILE;
+            sqlCommand.Parameters.AddWithValue("@Id", id);
+
+            byte[] file = (byte[]) sqlCommand.ExecuteScalar();
+
+            conn.Close();
+
+            return file;
         }
         public void delete(long senderId,long receiverId)
         {

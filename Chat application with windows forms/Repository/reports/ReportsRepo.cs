@@ -26,6 +26,7 @@ namespace Chat_application_with_windows_forms.Repository.reports
 
         public Dictionary<long,long> sentMostMessagesTo(long userid)
         {
+            if (conn.State == System.Data.ConnectionState.Closed)
             conn.Open();
 
             SqlCommand sqlCommand = conn.CreateCommand();

@@ -17,4 +17,15 @@ namespace Chat_application_with_windows_forms.Utils
             this.user = user;
         }
     }
+
+    class FileListViewItem : ListViewItem
+    {
+        public MessageFile file { get; }
+
+        public FileListViewItem(MessageFile file)
+        {
+            this.file = file;
+            this.Text = file.name.Trim();
+        }
+    }
 }

@@ -20,6 +20,7 @@ using Chat_application_with_windows_forms.Utils;
 using MessageBox = System.Windows.Forms.MessageBox;
 using Chat_application_with_windows_forms.Repository.group;
 using Chat_application_with_windows_forms.Security;
+using System.IO;
 
 namespace Chat_application_with_windows_forms.Client
 {
@@ -768,5 +769,71 @@ namespace Chat_application_with_windows_forms.Client
             this.receiverPublicKey = receiverPublicKey;
         }
 
+        private void attachment_button_Click(object sender, EventArgs e)
+        {
+            // Open a file dialog
+            string filePath = getFile();
+           
+
+            // get the file
+            // convert it into byte array
+            if (filePath != null)
+            {
+                string filename = Path.GetFileName(filePath);
+                string extesion = Path.GetExtension(filePath);
+
+                string resultingFileName = filename + extesion;
+                byte[] file = readFile(filePath);
+
+                // store it into the database
+
+                messageRepo.insertFile(loggedUser.id, selectedUserToMessage.id, resultingFileName, file);
+
+            }        
+         
+            // use signalr to send the file to the receipient if he/she is online
+        }
+
+        private void getFilesFromTheDatabase()
+        {
+            if (chat_files_ListView.Items.Count > 0)
+                chat_files_ListView.Items.Clear();
+
+            List<MessageFile> files = messageRepo.getFiles(loggedUser.id, selectedUserToMessage.id);
+
+            files.ForEach(file => file.file = messageRepo.retrieveFile(file.id));
+
+            files.ForEach(file =>
+            {
+                FileListViewItem fileListViewItem = new FileListViewItem(file);
+
+                chat_files_ListView.Items.Add(fileListViewItem);
+            });
+
+        }
+        private string getFile()
+        {
+            OpenFileDialog opf = new OpenFileDialog { Title = "Zgjidh file", };
+
+            DialogResult dialogResult = opf.ShowDialog();
+
+            if (dialogResult == DialogResult.OK)
+            {
+                return opf.FileName;
+            }
+
+            return null;
+        }
+
+        private byte[] readFile(string location)
+        {
+            return File.ReadAllBytes(location);
+        }
+        private void download_button_Click(object sender, EventArgs e)
+        {
+            // get the file and download it
+
+
+        }
     }
 }
