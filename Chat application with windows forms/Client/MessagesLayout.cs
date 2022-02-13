@@ -45,6 +45,8 @@ namespace Chat_application_with_windows_forms.Client
 
         private GroupRepository groupRepository;
         private List<Group> groupsOfUser;
+        
+        // enkriptim per sesion logimi me diffie hellman
         private DiffieHellman localDiffie;
 
        
@@ -190,6 +192,7 @@ namespace Chat_application_with_windows_forms.Client
         int y = 2;
         public void AddMessage(string sender, string receiver, byte[] messageBytes , byte[] pkey , byte[] iv)
         {
+            // received message is decrypted using AES with the help of Diffie Hellman
             string message = localDiffie.Decrypt(pkey, messageBytes, iv);
            
 
@@ -199,7 +202,8 @@ namespace Chat_application_with_windows_forms.Client
                 User senderUser = userRepo.findUserByPhoneNumber(sender);
                 User receiverUser = userRepo.findUserByPhoneNumber(receiver);
                 ChatPanel addedChat = createActiveChat(senderUser.fullname(), message, y, sender, false, false);
-              /* if (loggedUser.phoneNumber.Equals(sender))
+        
+                /* if (loggedUser.phoneNumber.Equals(sender))
                 {
 
                    addedChat = createActiveChat(receiverUser.fullname(), message, y, receiver, true, false);
@@ -211,6 +215,7 @@ namespace Chat_application_with_windows_forms.Client
                     addedChat = createActiveChat(senderUser.fullname(), message, y, sender, false, false);
 
                 } */
+
                 y += 38;
                 Console.WriteLine("Chats length {0}", chats.Count);
 
@@ -317,6 +322,9 @@ namespace Chat_application_with_windows_forms.Client
             string messageStr = message.Text;
             string receiver = selectedUserToMessage.phoneNumber;
 
+            // Gets the public key of the receiver
+            // loads it from the list (the list fills when user first logs in)
+            // used for database tracing
             await _hubProxy.Invoke("findPublicKey",loggedUser.phoneNumber.Trim(),  receiver.Trim());
 
             string receiverPublicKey = this.receiverPublicKeyForDb;
@@ -331,10 +339,13 @@ namespace Chat_application_with_windows_forms.Client
 
             chatPanelPopulation();  
 
+            // now the real time communication, gets the puublic keys of receivers
             await getPublicKeysOfReceivers(loggedUser.phoneNumber.Trim(),receiver);
 
+            // the message is encrypted using AES and Diffie Hellman
             byte[] encryptedMessage = localDiffie.Encrypt(this.receiverPublicKey, messageStr);
 
+            // server/hub is called 
             await _hubProxy.Invoke("Send", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, encryptedMessage, localDiffie.PublicKey,localDiffie.IV);
 
             message.Text = "";
