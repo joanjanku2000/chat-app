@@ -343,6 +343,25 @@ namespace Chat_application_with_windows_forms.Hubs
             privateKeys.Remove(u);
         }
 
+        private void sendFile(string sender,string receiver, byte[] file,string filename)
+        {
+            string conId = extractConnectionId(receiver);
+            // bool - caller
+            Clients.Caller.getFilesFromTheDatabase(sender,true);
+            if (conId != null)
+            {
+                // bool - not caller, but receiver
+                Clients.Client(conId).getFilesFromTheDatabase(sender,false);
+            }
+        }
+
+        private string extractConnectionId(string str)
+        {
+            string con = null;
+            reversed_users.TryGetValue(str, out con);
+
+            return con;
+        }
     }
 
     class UserGroup {

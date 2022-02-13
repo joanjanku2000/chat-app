@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Chat_application_with_windows_forms.Entities
 {
-    class MessageFile
+    public class MessageFile
     {
         public Int64 id { get; set; }
         public long sender { get; set; }

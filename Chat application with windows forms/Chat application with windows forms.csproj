@@ -218,6 +218,7 @@
     <Compile Include="Client\MessagesLayout.Designer.cs">
       <DependentUpon>MessagesLayout.cs</DependentUpon>
     </Compile>
+    <Compile Include="Entities\File.cs" />
     <Compile Include="Entities\Group.cs" />
     <Compile Include="Entities\GroupMessage.cs" />
     <Compile Include="Entities\Message.cs" />

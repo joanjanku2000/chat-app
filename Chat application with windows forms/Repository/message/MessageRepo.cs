@@ -45,7 +45,7 @@ namespace Chat_application_with_windows_forms.Entities
           "delete from user_message where (sender_id = @Senderid and receiver_id = @Receiverid) " +
             "or (sender_id = @Receiverid and receiver_id = @Senderid) ";
 
-        private static string INSERT_FILE = "insert into file_chat_user(sender_id,receiver_id,attachement,file_Namee) values(@Senderid,@Receiverid,@Attachment,@Filename);"
+        private static string INSERT_FILE = "insert into file_chat_user(sender_id,receiver_id,attachment,file_Namee) values(@Senderid,@Receiverid,@Attachment,@Filename);"
             ;
         private static string FIND_FILES_OF_USERS =
         "select * from file_chat_user where (sender_id = @Senderid and receiver_id = @Receiverid) " +

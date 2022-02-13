@@ -132,6 +132,8 @@ namespace Chat_application_with_windows_forms.Client
 
             _hubProxy.On<string>("findPublicKey_forDb", (pkey) => findPublicKey_forDb(pkey));
 
+            _hubProxy.On<string, bool>("getFilesFromTheDatabase", (sender, caller) => getFilesFromTheDatabase(sender, caller));
+
             Console.WriteLine("MEthod mapping done");
 
             try
@@ -489,6 +491,8 @@ namespace Chat_application_with_windows_forms.Client
             selectedUserToMessage = userRepo.findUserById(idOfContact);
             activeChatMessages = messageRepo.findMessagesOfUsers(loggedUser.id, selectedUserToMessage.id);
             populateChatBox();
+
+            getFilesFromTheDatabase("pak rendesi ka sepse eshte call-eri", true);
         }
 
         private ChatPanel createActiveChat(string nameToBeShown, string message, int yLocation, string phonenumber, bool you, bool seen)
@@ -611,6 +615,7 @@ namespace Chat_application_with_windows_forms.Client
                     messageRepo.seeMessage(message.id);
                 });
                 populateChatBox();
+                getFilesFromTheDatabase("pak rendesi ka sepse eshte call-eri", true);
             }
 
 
@@ -794,11 +799,15 @@ namespace Chat_application_with_windows_forms.Client
             // use signalr to send the file to the receipient if he/she is online
         }
 
-        private void getFilesFromTheDatabase()
+        private void getFilesFromTheDatabase(string sender,bool caller)
         {
             if (chat_files_ListView.Items.Count > 0)
                 chat_files_ListView.Items.Clear();
 
+            // situata kur useri mund te jete duke chatuar me dike tjeter
+            if (!caller && !selectedUserToMessage.phoneNumber.Trim().Equals(sender.Trim())){
+                return;
+            }
             List<MessageFile> files = messageRepo.getFiles(loggedUser.id, selectedUserToMessage.id);
 
             files.ForEach(file => file.file = messageRepo.retrieveFile(file.id));
