@@ -343,13 +343,14 @@ namespace Chat_application_with_windows_forms.Hubs
             privateKeys.Remove(u);
         }
 
-        private void sendFile(string sender,string receiver, byte[] file,string filename)
+        public void sendFile(string sender,string receiver, byte[] file,string filename)
         {
-            string conId = extractConnectionId(receiver);
+            string conId = extractConnectionId(receiver.Trim());
             // bool - caller
             Clients.Caller.getFilesFromTheDatabase(sender,true);
             if (conId != null)
             {
+                Console.WriteLine("Server: Calling client");
                 // bool - not caller, but receiver
                 Clients.Client(conId).getFilesFromTheDatabase(sender,false);
             }

@@ -132,7 +132,7 @@ namespace Chat_application_with_windows_forms.Client
 
             _hubProxy.On<string>("findPublicKey_forDb", (pkey) => findPublicKey_forDb(pkey));
 
-            _hubProxy.On<string, bool>("getFilesFromTheDatabase", (sender, caller) => getFilesFromTheDatabase(sender, caller));
+            _hubProxy.On<string, bool>("getFilesFromTheDatabase", (sender, caller) => this.Invoke(new Action(() => getFilesFromTheDatabase(sender, caller))));
 
             Console.WriteLine("MEthod mapping done");
 
@@ -774,7 +774,7 @@ namespace Chat_application_with_windows_forms.Client
             this.receiverPublicKey = receiverPublicKey;
         }
 
-        private void attachment_button_Click(object sender, EventArgs e)
+        private  void attachment_button_Click(object sender, EventArgs e)
         {
             // Open a file dialog
             string filePath = getFile();
@@ -791,12 +791,20 @@ namespace Chat_application_with_windows_forms.Client
                 byte[] file = readFile(filePath);
 
                 // store it into the database
-
+                if (selectedUserToMessage == null)
+                {
+                    MessageB.WARNING("Error", "Ju lutem percaktoni marresin");
+                    return;
+                }
                 messageRepo.insertFile(loggedUser.id, selectedUserToMessage.id, resultingFileName, file);
+
+                _hubProxy.Invoke("sendFile", loggedUser.phoneNumber, selectedUserToMessage.phoneNumber, file, resultingFileName);
+               
+                MessageB.INFORMATION( "Sukses", "FIle " + filename + " u dergua me sukses");
 
             }        
          
-            // use signalr to send the file to the receipient if he/she is online
+          
         }
 
         private void getFilesFromTheDatabase(string sender,bool caller)
@@ -806,6 +814,7 @@ namespace Chat_application_with_windows_forms.Client
 
             // situata kur useri mund te jete duke chatuar me dike tjeter
             if (!caller && !selectedUserToMessage.phoneNumber.Trim().Equals(sender.Trim())){
+                Console.WriteLine("Returning");
                 return;
             }
             List<MessageFile> files = messageRepo.getFiles(loggedUser.id, selectedUserToMessage.id);
@@ -853,7 +862,7 @@ namespace Chat_application_with_windows_forms.Client
             pathToSave += "/"+filename;
 
             File.WriteAllBytes(pathToSave, fileListView.file.file);
-            MessageB.INFORMATION(filename+" u shkarkua me sukses ne folderin Downloads", "SUKSES");
+            MessageB.INFORMATION( "SUKSES" , filename + " u shkarkua me sukses ne folderin Downloads");
         }
     }
 }

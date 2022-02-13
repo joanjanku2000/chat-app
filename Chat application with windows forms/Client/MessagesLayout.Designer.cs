@@ -32,6 +32,11 @@ namespace Chat_application_with_windows_forms.Client
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MessagesLayout));
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.download_button = new System.Windows.Forms.Button();
+            this.chat_files_ListView = new System.Windows.Forms.ListView();
+            this.attachment_button = new System.Windows.Forms.Button();
+            this.deleteChat_Button = new Chat_application_with_windows_forms.Utils.ChatButton();
             this.message = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.chats_groupBox = new System.Windows.Forms.GroupBox();
@@ -50,11 +55,6 @@ namespace Chat_application_with_windows_forms.Client
             this.button2 = new System.Windows.Forms.Button();
             this.reports_Group = new System.Windows.Forms.Button();
             this.new_conversation = new System.Windows.Forms.Button();
-            this.deleteChat_Button = new Chat_application_with_windows_forms.Utils.ChatButton();
-            this.attachment_button = new System.Windows.Forms.Button();
-            this.chat_files_ListView = new System.Windows.Forms.ListView();
-            this.download_button = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.chats_groupBox.SuspendLayout();
             this.contacts_groupBox.SuspendLayout();
@@ -94,6 +94,70 @@ namespace Chat_application_with_windows_forms.Client
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Communication Centre";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Bookman Old Style", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(421, 34);
+            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(48, 19);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Files";
+            // 
+            // download_button
+            // 
+            this.download_button.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("download_button.BackgroundImage")));
+            this.download_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.download_button.Location = new System.Drawing.Point(570, 411);
+            this.download_button.Margin = new System.Windows.Forms.Padding(2);
+            this.download_button.Name = "download_button";
+            this.download_button.Size = new System.Drawing.Size(61, 55);
+            this.download_button.TabIndex = 15;
+            this.download_button.UseVisualStyleBackColor = true;
+            this.download_button.Click += new System.EventHandler(this.download_button_Click);
+            // 
+            // chat_files_ListView
+            // 
+            this.chat_files_ListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
+            this.chat_files_ListView.Font = new System.Drawing.Font("Book Antiqua", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chat_files_ListView.HideSelection = false;
+            this.chat_files_ListView.Location = new System.Drawing.Point(420, 60);
+            this.chat_files_ListView.Margin = new System.Windows.Forms.Padding(2);
+            this.chat_files_ListView.Name = "chat_files_ListView";
+            this.chat_files_ListView.Size = new System.Drawing.Size(211, 347);
+            this.chat_files_ListView.TabIndex = 1;
+            this.chat_files_ListView.UseCompatibleStateImageBehavior = false;
+            this.chat_files_ListView.View = System.Windows.Forms.View.List;
+            // 
+            // attachment_button
+            // 
+            this.attachment_button.AutoEllipsis = true;
+            this.attachment_button.BackColor = System.Drawing.Color.Transparent;
+            this.attachment_button.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("attachment_button.BackgroundImage")));
+            this.attachment_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.attachment_button.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.attachment_button.ForeColor = System.Drawing.Color.SeaGreen;
+            this.attachment_button.Location = new System.Drawing.Point(420, 411);
+            this.attachment_button.Margin = new System.Windows.Forms.Padding(2);
+            this.attachment_button.Name = "attachment_button";
+            this.attachment_button.Size = new System.Drawing.Size(62, 55);
+            this.attachment_button.TabIndex = 7;
+            this.attachment_button.UseVisualStyleBackColor = false;
+            this.attachment_button.Click += new System.EventHandler(this.attachment_button_Click);
+            // 
+            // deleteChat_Button
+            // 
+            this.deleteChat_Button.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources.icon_delete_16;
+            this.deleteChat_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.deleteChat_Button.Location = new System.Drawing.Point(16, 18);
+            this.deleteChat_Button.Name = "deleteChat_Button";
+            this.deleteChat_Button.phoneNumber = null;
+            this.deleteChat_Button.Size = new System.Drawing.Size(45, 40);
+            this.deleteChat_Button.TabIndex = 6;
+            this.deleteChat_Button.UseVisualStyleBackColor = true;
+            this.deleteChat_Button.Click += new System.EventHandler(this.deleteChat_Button_Click);
             // 
             // message
             // 
@@ -326,69 +390,6 @@ namespace Chat_application_with_windows_forms.Client
             this.new_conversation.TabIndex = 12;
             this.new_conversation.UseVisualStyleBackColor = true;
             this.new_conversation.Click += new System.EventHandler(this.new_conversation_Click);
-            // 
-            // deleteChat_Button
-            // 
-            this.deleteChat_Button.BackgroundImage = global::Chat_application_with_windows_forms.Properties.Resources.icon_delete_16;
-            this.deleteChat_Button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.deleteChat_Button.Location = new System.Drawing.Point(16, 18);
-            this.deleteChat_Button.Name = "deleteChat_Button";
-            this.deleteChat_Button.phoneNumber = null;
-            this.deleteChat_Button.Size = new System.Drawing.Size(45, 40);
-            this.deleteChat_Button.TabIndex = 6;
-            this.deleteChat_Button.UseVisualStyleBackColor = true;
-            this.deleteChat_Button.Click += new System.EventHandler(this.deleteChat_Button_Click);
-            // 
-            // attachment_button
-            // 
-            this.attachment_button.AutoEllipsis = true;
-            this.attachment_button.BackColor = System.Drawing.Color.Transparent;
-            this.attachment_button.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("attachment_button.BackgroundImage")));
-            this.attachment_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.attachment_button.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.attachment_button.ForeColor = System.Drawing.Color.SeaGreen;
-            this.attachment_button.Location = new System.Drawing.Point(420, 411);
-            this.attachment_button.Margin = new System.Windows.Forms.Padding(2);
-            this.attachment_button.Name = "attachment_button";
-            this.attachment_button.Size = new System.Drawing.Size(62, 55);
-            this.attachment_button.TabIndex = 7;
-            this.attachment_button.UseVisualStyleBackColor = false;
-            this.attachment_button.Click += new System.EventHandler(this.attachment_button_Click);
-            // 
-            // chat_files_ListView
-            // 
-            this.chat_files_ListView.Font = new System.Drawing.Font("Book Antiqua", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chat_files_ListView.HideSelection = false;
-            this.chat_files_ListView.Location = new System.Drawing.Point(420, 60);
-            this.chat_files_ListView.Margin = new System.Windows.Forms.Padding(2);
-            this.chat_files_ListView.Name = "chat_files_ListView";
-            this.chat_files_ListView.Size = new System.Drawing.Size(211, 347);
-            this.chat_files_ListView.TabIndex = 1;
-            this.chat_files_ListView.UseCompatibleStateImageBehavior = false;
-            this.chat_files_ListView.View = System.Windows.Forms.View.List;
-            // 
-            // download_button
-            // 
-            this.download_button.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("download_button.BackgroundImage")));
-            this.download_button.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.download_button.Location = new System.Drawing.Point(570, 411);
-            this.download_button.Margin = new System.Windows.Forms.Padding(2);
-            this.download_button.Name = "download_button";
-            this.download_button.Size = new System.Drawing.Size(61, 55);
-            this.download_button.TabIndex = 15;
-            this.download_button.UseVisualStyleBackColor = true;
-            this.download_button.Click += new System.EventHandler(this.download_button_Click);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Bookman Old Style", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(421, 34);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(48, 19);
-            this.label1.TabIndex = 14;
-            this.label1.Text = "Files";
             // 
             // MessagesLayout
             // 
